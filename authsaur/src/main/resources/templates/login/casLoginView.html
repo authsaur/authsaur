@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <!--    <link rel="shortcut icon" href="/favicon.ico"/>-->
+    <!--/* Core CAS CSS */-->
+    <span th:remove="tag" th:if="${'true' == #strings.defaultString(#themes.code('cas.css.core.enabled'), 'true')}">
+        <span th:replace="fragments/includes :: stylesheets">
+            <a href="fragments/includes.html">Theme</a> stylesheet fragment will go here
+        </span>
+    </span>
+
+    <span th:remove="tag" th:each="file : ${#strings.arraySplit(#themes.code('cas.standard.css.file'), ',')}">
+        <link rel="stylesheet" type="text/css" href="../static/css/cas.css" th:href="@{${file}}"/>
+    </span>
+    <link rel="stylesheet" type="text/css" th:href="@{/stylecss/custom.css}"/>
+    <link rel="shortcut icon"
+          th:href="${#strings.defaultString(#themes.code('authsaur.theme.favicon'), '/favicon.ico')}"/>
+
+    <title th:text="#{authsaur.i18n.systemName}">CAS Login View</title>
+
+    <style>
+        #qrArea {
+            z-index: 2;
+            background-color: #fff;
+            inset: 0px;
+            width: 100%;
+        }
+
+        #loginArea {
+            z-index: 3;
+            background-color: #fff;
+            inset: 0px;
+            width: 100%;
+        }
+
+        .uk-legend {
+            /*padding-top: 16px;*/
+            /*padding-bottom: 16px;*/
+            font-weight: 900;
+        }
+
+        @media screen and (max-width: 640px) {
+            #content {
+                padding-top: 60px;
+            }
+        }
+
+        #lang_svg {
+            fill: #ffffff;
+        }
+    </style>
+
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/js/jquerycookie.min.js}"></script>
+    <!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>-->
+    <script src="https://g.alicdn.com/dingding/h5-dingtalk-login/0.30.0/ddlogin.js"></script>
+    <script src="https://g.alicdn.com/dingding/dingtalk-jsapi/2.15.0/dingtalk.open.js"></script>
+    <style th:if="${#lists.contains(methods, 'form')}">
+        #qrArea {
+            position: absolute;
+        }
+    </style>
+    <style th:if="${#themes.code('authsaur.login.layout')} ne '1'">
+        #login-body {
+            background-color: var(--cas-theme-primary);
+        }
+
+        .login-app-bar {
+            background-color: transparent !important;
+        }
+    </style>
+    <style th:if="${#themes.code('authsaur.login.layout')} ne '2'">
+        #panel {
+            background-color: #f9f9f9;
+        }
+
+        .uk-subnav > * > :first-child {
+            color: inherit !important;
+        }
+
+        .uk-subnav > * > a:hover {
+            color: #444 !important;
+        }
+    </style>
+    <style th:if="${#themes.code('authsaur.login.layout')} eq '3'">
+        @media screen and (min-width: 640px) {
+            #lang_svg {
+                fill: #666666;
+            }
+        }
+
+        #loginPanel, #bannerPanel {
+            margin-bottom: 60px;
+        }
+
+        #loginPanel {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        #banner {
+            background-color: var(--cas-theme-primary);
+        }
+    </style>
+
+</head>
+
+<body class="login" id="login-body" style="display:flex;height: 100vh">
+<div id="bdy" style="position: absolute;top: 0;bottom: 0;left: 0;right: 0;z-index: 999;background-color: #fff;"></div>
+<header id="app-bar" class="login-app-bar mdc-top-app-bar mdc-top-app-bar--fixed shadow-sm">
+    <nav class="mdc-top-app-bar__row navbar navbar-dark bg-dark">
+        <div id="header-bar" class="container-fluid container-fluid d-flex align-items-center justify-content-between">
+            <section class="mdc-top-app-bar__section" style="flex:none">
+                    <span class="cas-brand mx-auto">
+                        <img id="cas-logo" class="cas-logo" th:src="${#themes.code('authsaur.theme.logo')}"/>
+                    </span>
+                <a id="cas-title" th:href="@{/login}" class="uk-link-heading">
+                    <span class="uk-text-lead"
+                          style="font-size: 1.4rem;line-height: 1.5;color: rgb(244 244 250);margin-left: 8px;font-weight: 600;"
+                          th:text="#{authsaur.i18n.systemName}">
+                    </span>
+                </a>
+            </section>
+            <section style="margin-right: 8px;-webkit-app-region: no-drag;" id="cas-lang"
+                     th:if="${'true' == #themes.code('authsaur.lang.enabled')}">
+                <!--                <img th:src="@{/uikit/images/lang.svg}" width="22" height="22"-->
+                <!--                     th:style="${#themes.code('authsaur.login.layout') eq '3' ? 'background: var(&#45;&#45;cas-theme-primary);padding:4px':''}">-->
+                <svg viewBox="0 0 1024 1024" width="22" height="22" id="lang_svg">
+                    <path d="M531 703.2c0.8-1.2 1.8-2.6 2.4-3.8 0.8-1.4 1.4-2.6 2-4 0.6-1.4 1.2-2.8 1.6-4.2 0.4-1.4 1-2.8 1.2-4.4 0.4-1.4 0.6-3 0.8-4.4 0.2-1.6 0.4-3 0.4-4.6v-4.6c0-1.6-0.2-3-0.4-4.6-0.2-1.4-0.6-3-1-4.4-0.4-1.4-0.8-3-1.4-4.4l-1.8-4.2c-0.6-1.4-1.4-2.6-2.2-4-0.8-1.2-1.6-2.6-2.6-3.8-1-1.2-1.8-2.4-3-3.4-1-1.2-2.2-2.2-3.2-3.2-1.2-1-2.4-2-3.6-2.8-0.4-0.4-31.6-23.4-77-73.2 83.6-113.2 131-242 150.4-302.6h68c1.6 0 3 0 4.6-0.2 1.6-0.2 3-0.4 4.6-0.6 1.4-0.2 3-0.6 4.4-1.2 1.4-0.4 2.8-1 4.2-1.6 1.4-0.6 2.8-1.2 4.2-2 1.4-0.8 2.6-1.4 4-2.4 1.2-0.8 2.4-1.8 3.6-2.8 1.2-1 2.2-2 3.4-3 1-1 2-2.2 3-3.4 1-1.2 1.8-2.4 2.8-3.6 0.8-1.2 1.6-2.6 2.4-4 0.8-1.4 1.4-2.8 2-4.2 0.6-1.4 1-2.8 1.6-4.2 0.4-1.4 0.8-3 1.2-4.4s0.6-3 0.6-4.6c0.2-1.6 0.2-3 0.2-4.6s0-3-0.2-4.6c-0.2-1.6-0.4-3-0.6-4.6s-0.6-3-1.2-4.4c-0.4-1.4-1-2.8-1.6-4.2-0.6-1.4-1.2-2.8-2-4.2-0.8-1.4-1.4-2.6-2.4-4-0.8-1.2-1.8-2.4-2.8-3.6-1-1.2-2-2.2-3-3.4-1-1-2.2-2-3.4-3s-2.4-1.8-3.6-2.8c-1.2-0.8-2.6-1.6-4-2.4-1.4-0.8-2.8-1.4-4.2-2-1.4-0.6-2.8-1-4.2-1.6-1.4-0.4-3-0.8-4.4-1.2-1.4-0.2-3-0.6-4.6-0.6-1.6-0.2-3-0.2-4.6-0.2H417.4V127.6c0-1.6 0-3-0.2-4.6-0.2-1.6-0.4-3-0.6-4.6-0.2-1.4-0.6-3-1.2-4.4-0.4-1.4-1-2.8-1.6-4.2s-1.2-2.8-2-4.2c-0.8-1.4-1.4-2.6-2.4-4-0.8-1.2-1.8-2.4-2.8-3.6-1-1.2-2-2.2-3-3.4-1-1-2.2-2-3.4-3-1.2-1-2.4-1.8-3.6-2.8-1.2-0.8-2.6-1.6-4-2.4s-2.8-1.4-4.2-2c-1.4-0.6-2.8-1-4.2-1.6-1.4-0.4-3-0.8-4.4-1.2-1.4-0.2-3-0.6-4.6-0.6-1.6-0.2-3-0.2-4.6-0.2-1.6 0-3 0-4.6 0.2-1.6 0.2-3 0.4-4.6 0.6-1.4 0.2-3 0.6-4.4 1.2-1.4 0.4-2.8 1-4.2 1.6-1.4 0.6-2.8 1.2-4.2 2s-2.6 1.4-4 2.4c-1.2 0.8-2.4 1.8-3.6 2.8-1.2 1-2.2 2-3.4 3s-2 2.2-3 3.4c-1 1.2-1.8 2.4-2.8 3.6-0.8 1.2-1.6 2.6-2.4 4-0.8 1.4-1.4 2.8-2 4.2-0.6 1.4-1 2.8-1.6 4.2-0.4 1.4-0.8 3-1.2 4.4s-0.6 3-0.6 4.6c-0.2 1.6-0.2 3-0.2 4.6v42.2H80c-1.6 0-3 0-4.6 0.2-1.6 0.2-3 0.4-4.6 0.6-1.4 0.2-3 0.6-4.4 1.2-1.4 0.4-2.8 1-4.2 1.6-1.4 0.6-2.8 1.2-4.2 2-1.4 0.8-2.6 1.4-4 2.4-1.2 0.8-2.4 1.8-3.6 2.8-1.2 1-2.2 2-3.4 3-1 1-2 2.2-3 3.4-1 1.2-1.8 2.4-2.8 3.6-0.8 1.2-1.6 2.6-2.4 4-0.8 1.4-1.4 2.8-2 4.2s-1 2.8-1.6 4.2c-0.4 1.4-0.8 3-1.2 4.4-0.2 1.4-0.6 3-0.6 4.6-0.2 1.6-0.2 3-0.2 4.6 0 1.6 0 3 0.2 4.6s0.4 3 0.6 4.6c0.2 1.4 0.6 3 1.2 4.4 0.4 1.4 1 2.8 1.6 4.2 0.6 1.4 1.2 2.8 2 4.2 0.8 1.4 1.4 2.6 2.4 4 0.8 1.2 1.8 2.4 2.8 3.6s2 2.2 3 3.4c1 1 2.2 2 3.4 3 1.2 1 2.4 1.8 3.6 2.8s2.6 1.6 4 2.4c1.4 0.8 2.8 1.4 4.2 2 1.4 0.6 2.8 1 4.2 1.6s3 0.8 4.4 1.2c1.4 0.2 3 0.6 4.6 0.6 1.6 0.2 3 0.2 4.6 0.2h416c-20 56.8-57 146.6-113.4 228.6-66.2-88-90.8-144.8-91-145.2-0.6-1.4-1.2-2.8-2-4-0.8-1.4-1.6-2.6-2.4-3.8-0.8-1.2-1.8-2.4-2.8-3.6-1-1.2-2-2.2-3-3.4-1-1-2.2-2-3.4-3s-2.4-1.8-3.6-2.6-2.6-1.6-4-2.2c-1.4-0.6-2.8-1.4-4.2-1.8-1.4-0.6-2.8-1-4.2-1.4-1.4-0.4-3-0.8-4.4-1-1.4-0.2-3-0.4-4.4-0.6-1.6-0.2-3-0.2-4.6-0.2-1.6 0-3 0-4.6 0.2-1.6 0.2-3 0.4-4.4 0.6-1.4 0.4-3 0.6-4.4 1.2s-2.8 1-4.2 1.6-2.8 1.2-4 2c-1.4 0.8-2.6 1.4-3.8 2.4-1.2 0.8-2.4 1.8-3.6 2.8-1.2 1-2.2 2-3.4 3-1 1-2 2.2-3 3.4-1 1.2-1.8 2.4-2.6 3.6s-1.6 2.6-2.4 3.8c-0.8 1.4-1.4 2.6-2 4-0.6 1.4-1 2.8-1.6 4.2-0.4 1.4-0.8 3-1.2 4.4-0.2 1.4-0.6 3-0.6 4.4-0.2 1.6-0.2 3-0.2 4.6s0 3 0.2 4.6 0.4 3 0.6 4.4c0.2 1.4 0.6 3 1 4.4s1 2.8 1.4 4.2c1.2 3 30.6 72.2 111.6 177 2 2.6 3.8 5 5.8 7.4-82.8 93.6-164 151.6-198 170.4-1.4 0.8-2.6 1.6-3.8 2.4-1.2 0.8-2.4 1.8-3.6 2.8-1.2 1-2.2 2-3.4 3-1 1-2 2.2-3 3.4-1 1.2-1.8 2.4-2.6 3.6-0.8 1.2-1.6 2.6-2.4 4-0.8 1.4-1.4 2.8-2 4.2-0.6 1.4-1 2.8-1.6 4.4s-0.8 3-1 4.4c-0.2 1.4-0.4 3-0.6 4.6-0.2 1.6-0.2 3-0.2 4.6 0 1.6 0 3 0.2 4.6 0.2 1.6 0.4 3 0.8 4.6 0.4 1.4 0.6 3 1.2 4.4 0.4 1.4 1 2.8 1.6 4.2s1.2 2.8 2 4.2c0.8 1.4 1.6 2.6 2.4 3.8 0.8 1.2 1.8 2.4 2.8 3.6 1 1.2 2 2.2 3 3.4 1 1 2.2 2 3.4 3 1.2 1 2.4 1.8 3.6 2.6 1.2 0.8 2.6 1.6 4 2.4 1.4 0.8 2.8 1.4 4.2 2 1.4 0.6 2.8 1 4.4 1.4 1.4 0.4 3 0.8 4.4 1 1.4 0.2 3 0.4 4.6 0.6 1.6 0.2 3 0.2 4.6 0.2 1.6 0 3-0.2 4.6-0.2 1.6-0.2 3-0.4 4.6-0.8 1.4-0.4 3-0.6 4.4-1.2 1.4-0.4 2.8-1 4.2-1.6 1.4-0.6 2.8-1.2 4.2-2 4.6-2.4 102.6-56.8 214.4-180.6 47.6 50.8 80.2 74.8 82.2 76.2 1.2 0.8 2.6 1.8 3.8 2.4 1.4 0.8 2.6 1.4 4 2.2l4.2 1.8c1.4 0.4 2.8 1 4.4 1.2 1.4 0.4 3 0.6 4.4 0.8 1.6 0.2 3 0.4 4.6 0.4h4.6c1.6 0 3-0.2 4.6-0.4 1.6-0.2 3-0.6 4.4-1s3-0.8 4.4-1.4l4.2-1.8c1.4-0.6 2.8-1.4 4-2.2 1.2-0.8 2.6-1.6 3.8-2.6 1.2-1 2.4-1.8 3.4-3 1.2-1 2.2-2.2 3.2-3.2 0.4-2.6 1.2-3.8 2.2-5z m141.2 40.2l70-169.4 70 169.4h-140z m302.8 151.2l-189.8-459.8c-0.8-2.2-1.8-4.2-3-6.2s-2.4-3.8-4-5.6-3-3.4-4.8-5c-1.6-1.6-3.4-3-5.4-4.2-1.8-1.2-3.8-2.4-6-3.4-2-1-4.2-1.8-6.4-2.4-2.2-0.6-4.4-1.2-6.6-1.4-2.2-0.4-4.6-0.6-6.8-0.6s-4.6 0.2-6.8 0.6c-2.2 0.4-4.4 0.8-6.6 1.4-2.2 0.6-4.4 1.4-6.4 2.4s-4 2.2-6 3.4c-1.8 1.2-3.6 2.6-5.4 4.2-1.6 1.6-3.2 3.2-4.8 5-1.4 1.8-2.8 3.6-4 5.6-1.2 2-2.2 4-3 6.2l-189.8 459.8c-0.6 1.4-1.2 2.8-1.6 4.2-0.4 1.4-0.8 3-1.2 4.4s-0.6 3-0.6 4.6c-0.2 1.6-0.2 3-0.2 4.6 0 1.6 0 3 0.2 4.6 0.2 1.6 0.4 3 0.6 4.6 0.2 1.4 0.6 3 1.2 4.4 0.4 1.4 1 2.8 1.6 4.4s1.2 2.8 2 4.2c0.8 1.4 1.4 2.6 2.4 4 0.8 1.2 1.8 2.4 2.8 3.6 1 1.2 2 2.4 3 3.4s2.2 2.2 3.4 3c1.2 1 2.4 1.8 3.6 2.8 1.2 0.8 2.6 1.6 4 2.4 1.4 0.8 2.8 1.4 4.2 2 1.4 0.6 2.8 1 4.4 1.6 1.4 0.4 3 0.8 4.4 1.2 1.4 0.2 3 0.6 4.6 0.6 1.6 0.2 3 0.2 4.6 0.2s3 0 4.6-0.2c1.6-0.2 3-0.4 4.6-0.6 1.4-0.4 3-0.6 4.4-1.2 1.4-0.4 2.8-1 4.2-1.6 1.4-0.6 2.8-1.2 4.2-2 1.4-0.8 2.6-1.6 4-2.4s2.4-1.8 3.6-2.8c1.2-1 2.2-2 3.4-3 1-1 2-2.2 3-3.4 1-1.2 1.8-2.4 2.8-3.6 0.8-1.2 1.6-2.6 2.4-4 0.8-1.4 1.4-2.8 2-4.2l38.6-93.6h216.6l38.6 93.6c0.8 2.2 1.8 4.2 3 6.2s2.4 3.8 4 5.6c1.4 1.8 3 3.4 4.8 5 1.6 1.6 3.4 3 5.4 4.2 1.8 1.2 3.8 2.4 6 3.4 2 1 4.2 1.8 6.4 2.4 2.2 0.6 4.4 1.2 6.6 1.4 2.2 0.4 4.6 0.6 6.8 0.6h2.8c1 0 1.8-0.2 2.8-0.2 1-0.2 1.8-0.2 2.8-0.4 1-0.2 1.8-0.4 2.8-0.6 1-0.2 1.8-0.4 2.8-0.8 1-0.2 1.8-0.6 2.6-1s1.8-0.8 2.6-1.2c0.8-0.4 1.8-0.8 2.6-1.2 0.8-0.4 1.6-1 2.4-1.4s1.6-1 2.4-1.6c0.8-0.6 1.6-1.2 2.2-1.8 0.8-0.6 1.4-1.2 2.2-1.8 0.8-0.6 1.4-1.2 2-2l2-2c0.6-0.8 1.2-1.4 1.8-2.2 0.6-0.8 1.2-1.6 1.6-2.4 0.6-0.8 1-1.6 1.6-2.4 0.4-0.8 1-1.6 1.4-2.6 0.4-0.8 0.8-1.8 1.2-2.6 0.4-0.8 0.8-1.8 1-2.6 0.4-0.8 0.6-1.8 0.8-2.8 0.2-1 0.6-1.8 0.8-2.8 0.2-1 0.4-1.8 0.6-2.8 0.2-1 0.2-1.8 0.4-2.8 0-1 0.2-1.8 0.2-2.8v-2.8c0-1 0-1.8-0.2-2.8 0-1-0.2-1.8-0.4-2.8-0.2-1-0.4-1.8-0.6-2.8-0.2-1-0.4-1.8-0.6-2.8-0.2-1-0.6-1.8-0.8-2.8-1-1.4-1.2-2.2-1.6-3z"
+                    ></path>
+                </svg>
+                <div uk-dropdown>
+                    <ul class="uk-nav uk-dropdown-nav">
+                        <li id="zhCN"><a><span role="img" aria-label="简体中文"
+                                               style="margin-right: 8px;">🇨🇳</span>简体中文</a>
+                        </li>
+                        <li id="en"><a><span role="img" aria-label="English" style="margin-right: 8px;">🇺🇸</span>English</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <script type="text/javascript">
+                    $("#zhCN>a").click(function () {
+                        $.cookie('language.locale', 'zh-CN', {path: '/'});
+                        location.reload();
+                    });
+                    $("#en>a").click(function () {
+                        $.cookie('language.locale', 'en', {path: '/'});
+                        location.reload();
+                    });
+
+                    var lang = $.cookie('language.locale');
+                    if (lang == 'zh-CN') {
+                        $("#zhCN").addClass('uk-active');
+                        $("#en").removeClass('uk-active');
+                    } else {
+                        $("#zhCN").removeClass('uk-active');
+                        $("#en").addClass('uk-active');
+                    }
+                </script>
+            </section>
+        </div>
+    </nav>
+</header>
+
+
+<div id="content" class="uk-flex uk-flex-center uk-flex-middle uk-height-1-1">
+    <div th:class="${(#themes.code('authsaur.login.layout') eq '3') ? 'uk-card uk-width-1-1 uk-height-1-1' :
+    #strings.isEmpty(#themes.code('authsaur.login.banner')) ? 'uk-card uk-width-1-3@m uk-width-2-3@s uk-height-1-1' : 'uk-card uk-width-3-5@m uk-width-1-1@s uk-height-1-1'}">
+        <div class="uk-grid-collapse uk-child-width-expand@s uk-grid-match uk-height-1-1" uk-grid>
+            <div id="banner" class="uk-flex uk-flex-middle uk-flex-center"
+                 th:if="${#themes.code('authsaur.login.layout') eq '3' or !#strings.isEmpty(#themes.code('authsaur.login.banner'))}">
+                <!-- <div class="uk-background-muted uk-padding-remove"> -->
+                <!--                                                        <div class="uk-height-1-1 uk-flex uk-flex-center uk-flex-middle uk-background-cover uk-light"-->
+                <!--                                                             data-src="uikit/images/Secure.svg" uk-img>-->
+                <!--                                                        </div>-->
+                <div th:class="${#themes.code('authsaur.login.layout') eq '3' ? 'uk-width-2-3' : 'uk-flex uk-flex-middle uk-flex-center uk-width-1-1'}"
+                     id="bannerPanel">
+                    <img th:src="${#themes.code('authsaur.login.banner')}"
+                         th:if="${!#strings.isEmpty(#themes.code('authsaur.login.banner'))}">
+                </div>
+            </div>
+
+            <div class="uk-flex uk-flex-middle uk-flex-center" style="position:relative;" id="panel">
+                <div th:class="${#themes.code('authsaur.login.layout') eq '3' ? 'uk-flex uk-flex-middle uk-flex-center uk-width-3-5@xl uk-width-2-3@s' : 'uk-flex uk-flex-middle uk-flex-center'}"
+                     style="position: relative;" id="loginPanel">
+                    <div th:if="${#lists.contains(methods, 'qr')} and ${#lists.contains(methods, 'form')}"
+                         id="qrLogin"
+                         class="app-login-switcher base-comp-switcher"
+                         style="position: absolute;z-index: 6;top: 0;right: 0;width: 80px;height: 80px;cursor: pointer;">
+                        <img src="images/qr_login.png" data-spm-anchor-id="0.0.0.i2.3bc337adyjSI6I"
+                             style="display: block;width: 100%;height: 100%;opacity: 0.8;transition: all 0.3s;">
+                    </div>
+                    <div th:if="${#lists.contains(methods, 'qr')} and ${#lists.contains(methods, 'form')}"
+                         id="returnBtn"
+                         class="app-login-switcher base-comp-switcher"
+                         style="position: absolute;z-index: 6;top: 0;right: 0;width: 80px;height: 80px;cursor: pointer;display: none;">
+                        <img src="images/local_login.png" data-spm-anchor-id="0.0.0.i2.3bc337adyjSI6I"
+                             style="display: block;width: 100%;height: 100%;opacity: 0.8;transition: all 0.3s;">
+                    </div>
+
+                    <div th:if="${#lists.contains(methods, 'form')}" id="loginArea"
+                    >
+                        <div class="uk-padding">
+                            <legend class="uk-legend" th:text="#{authsaur.i18n.companyName}">通行证登录</legend>
+                            <ul uk-tab>
+                                <li th:if="${#lists.contains(methods, 'pwd')}"><a href="#"
+                                                                                  th:text="#{page.login.password}">密码登录</a>
+                                </li>
+                                <li class="uk-active" th:if="${error} and ${#lists.contains(methods, 'sms')}"><a
+                                        href="#" th:text="#{page.login.sms}">短信登录</a></li>
+                                <li th:if="not ${error} and ${#lists.contains(methods, 'sms')}"><a
+                                        href="#" th:text="#{page.login.sms}">短信登录</a></li>
+                            </ul>
+                            <ul class="uk-switcher uk-margin uk-margin-remove-bottom" style="min-height: 300px">
+                                <li>
+                                    <form class="uk-form-stacked" method="post" action="login"
+                                          th:object="${credential}">
+                                        <!--                                        <div id="login-form-controls"-->
+                                        <!--                                             >-->
+                                        <!--                                            <div id="loginErrorsPanel"-->
+                                        <!--                                                 class="alert alert-danger banner banner-danger banner-dismissible"-->
+                                        <!--                                                 th:if="${#fields.hasErrors('*')}">-->
+                                        <!--                                                <p th:each="err : ${#fields.errors('*')}" th:utext="${err + ' '}">-->
+                                        <!--                                                    Example error</p>-->
+                                        <!--                                                &lt;!&ndash;<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>&ndash;&gt;-->
+                                        <!--                                            </div>-->
+                                        <!--                                        </div>-->
+
+                                        <div class="uk-alert-danger" uk-alert th:if="${#fields.hasErrors('*')}">
+                                            <button class="uk-alert-close" type="button" uk-close></button>
+                                            <p th:each="err : ${#fields.errors('*')}" th:utext="${err + ' '}">
+                                                Example
+                                                error</p>
+                                        </div>
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label" for="form-stacked-text"
+                                                   th:text="#{screen.login.username}">用户名</label>
+                                            <div class="uk-form-controls">
+                                                <div class="uk-inline uk-width-1-1">
+                                                    <span class="uk-form-icon" uk-icon="icon: user"></span>
+                                                    <input th:field="*{username}" class="uk-input" type="text"
+                                                           name="username" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label" for="form-stacked-text"
+                                                   th:text="#{screen.login.password}">密码</label>
+                                            <div class="uk-form-controls">
+                                                <div class="uk-inline uk-width-1-1">
+                                                    <span class="uk-form-icon" uk-icon="icon: lock"></span>
+                                                    <input class="uk-input" th:field="*{password}"
+                                                           type="password"
+                                                           name="password" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="execution" th:value="${flowExecutionKey}"/>
+                                        <input type="hidden" name="_eventId" value="submit"/>
+                                        <input type="hidden" name="geolocation"/>
+                                        <!--                                                <div class="uk-text-left uk-text-small uk-text-muted uk-padding-remove">-->
+                                        <!--                                                    <a th:href="${protocol}" th:text="#{page.login.protocol}">阅读服务协议和隐私条款</a>-->
+                                        <!--                                                </div>-->
+                                        <div class="uk-margin">
+                                            <div class="uk-form-controls">
+                                                <div class="uk-inline uk-width-1-1">
+                                                    <button class="uk-button uk-button-primary uk-width-1-1"
+                                                            type="submit"
+                                                            style="font-weight: 600;font-size: 16px;"
+                                                            th:text="#{screen.welcome.button.login}">登&nbsp;录
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <a th:if="${#lists.contains(methods, 'GitHub')}"
+                                               th:href="@{/clientredirect?client_name=Github}"
+                                               class="uk-icon-button uk-margin-small-right" uk-icon="github"></a>
+                                            <a th:if="${#lists.contains(methods, 'Google')}"
+                                               th:href="@{/clientredirect?client_name=Google}"
+                                               class="uk-icon-button  uk-margin-small-right" uk-icon="google"></a>
+                                            <a th:if="${#lists.contains(methods, 'weibo')}"
+                                               th:href="@{/clientredirect?client_name=weibo}"
+                                               class="uk-icon-button  uk-margin-small-right" uk-icon="facebook"></a>
+                                        </div>
+                                        <div uk-alert th:if="${!#strings.isEmpty(#themes.code('authsaur.i18n.notice'))}"
+                                             th:text="${#themes.code('authsaur.i18n.notice')}">
+                                        </div>
+
+                                    </form>
+                                </li>
+                                <li th:if="${#lists.contains(methods, 'sms')}">
+                                    <form class="uk-form-stacked" method="post" action="login"
+                                    >
+                                        <div class="uk-alert-danger" uk-alert th:if="${error}">
+                                            <button class="uk-alert-close" type="button" uk-close></button>
+                                            <p th:text="#{passwordless.error.failure.description}"></p>
+                                        </div>
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label" for="form-stacked-text"
+                                                   th:text="#{screen.login.username}">用户名</label>
+                                            <div class="uk-form-controls">
+                                                <div class="uk-inline uk-width-1-1">
+                                                    <span class="uk-form-icon" uk-icon="icon: user"></span>
+                                                    <input id="s_username" class="uk-input" type="text"
+                                                           autocomplete="off"
+                                                           name="username" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label" for="form-stacked-text"
+                                                   th:text="#{page.login.verify}">验证码</label>
+                                            <div class="uk-form-controls">
+                                                <div class="uk-inline">
+                                                    <input class="uk-input uk-form-width-small uk-margin-small-right"
+                                                           type="text"
+                                                           name="token" required autocomplete="off">
+                                                    <button class="hmac uk-button uk-button-default"
+                                                            type="button" th:value="${flowExecutionKey}"
+                                                            th:text="#{page.login.sendVerify}">发送验证码
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="execution" th:value="${flowExecutionKey}"/>
+                                        <input type="hidden" name="_eventId" value="verifyCode"/>
+                                        <input type="hidden" name="geolocation"/>
+                                        <!--                                                <div class="uk-text-left uk-text-small uk-text-muted uk-padding-remove">-->
+                                        <!--                                                    <a th:href="${protocol}" th:text="#{page.login.protocol}">阅读服务协议和隐私条款</a>-->
+                                        <!--                                                </div>-->
+                                        <div class="uk-margin">
+                                            <div class="uk-form-controls">
+                                                <div class="uk-inline uk-width-1-1">
+                                                    <button class="uk-button uk-button-primary uk-width-1-1"
+                                                            type="submit"
+                                                            style="font-weight: 600;font-size: 16px;"
+                                                            th:text="#{screen.welcome.button.login}">登&nbsp;录
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <a th:if="${#lists.contains(methods, 'GitHub')}"
+                                               th:href="@{/clientredirect?client_name=Github}"
+                                               class="uk-icon-button uk-margin-small-right" uk-icon="github"></a>
+                                            <a th:if="${#lists.contains(methods, 'Google')}"
+                                               th:href="@{/clientredirect?client_name=Google}"
+                                               class="uk-icon-button  uk-margin-small-right" uk-icon="google"></a>
+                                            <a th:if="${#lists.contains(methods, 'weibo')}"
+                                               th:href="@{/clientredirect?client_name=weibo}"
+                                               class="uk-icon-button  uk-margin-small-right" uk-icon="facebook"></a>
+                                        </div>
+                                        <div uk-alert th:if="${!#strings.isEmpty(#themes.code('authsaur.i18n.notice'))}"
+                                             th:text="${#themes.code('authsaur.i18n.notice')}">
+                                        </div>
+
+
+                                    </form>
+                                    <!--                                            <form id="send_form" method="post" action="login" hidden>-->
+                                    <!--                                                <input type="hidden" name="execution" th:value="${flowExecutionKey}"/>-->
+                                    <!--                                                <input type="hidden" name="_eventId" value="sendCode"/>-->
+                                    <!--                                                <input type="hidden" name="username" value="fanbida"/>-->
+                                    <!--                                            </form>-->
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div th:if="${#lists.contains(methods, 'qr')}" id="qrArea" class="uk-animation-fade"
+                    >
+                        <div class="uk-padding">
+                            <legend class="uk-legend" th:text="#{authsaur.i18n.companyName}"></legend>
+                            <ul uk-tab>
+                                <li><a href="#" th:text="#{page.login.dingtalk}">钉钉扫码</a></li>
+                            </ul>
+                            <!-- </div> -->
+                            <!-- <legend class="uk-legend">Login</legend> -->
+                            <ul class="uk-switcher uk-margin uk-margin-remove-bottom">
+                                <li>
+                                    <div id="self_defined_element" class="self-defined-classname"
+                                         style="width: 300px;height: 300px;margin:0 auto;">
+                                    </div>
+                                </li>
+                            </ul>
+
+                        </div>
+
+                        <script type="text/javascript"
+                                th:if="${#lists.contains(methods, 'qr')} and ${#lists.contains(methods, 'form')}">
+                            $("#qrLogin").click(function (e) {
+                                $("#qrArea").css('z-index', '3');
+                                $("#loginArea").css('z-index', '2');
+                                $("#qrLogin").hide();
+                                $("#returnBtn").show();
+                            })
+                            $("#returnBtn").click(function (e) {
+                                $("#qrArea").css('z-index', '2');
+                                $("#loginArea").css('z-index', '3');
+                                $("#qrLogin").show();
+                                $("#returnBtn").hide();
+                            })
+                        </script>
+                        <script type="text/javascript" th:if="${#lists.contains(methods, 'qr')}"
+                                th:inline="javascript">
+                            /*<![CDATA[*/
+                            var dingtalkName = [[${dingtalkName}]];
+
+                            function initQr(key) {
+                                // STEP3：在需要的时候，调用 window.DTFrameLogin 方法构造登录二维码，并处理登录成功或失败的回调。
+                                window.DTFrameLogin(
+                                    {
+                                        id: 'self_defined_element',
+                                        width: 300,
+                                        height: 300,
+                                    },
+                                    {
+                                        redirect_uri: encodeURIComponent(location.href.substring(0, location.href.indexOf('/login')) + "/login"),
+                                        client_id: key,
+                                        scope: 'openid',
+                                        response_type: 'code',
+                                        state: 'statexx',
+                                        prompt: 'consent',
+                                    },
+                                    (loginResult) => {
+                                        const {redirectUrl, authCode, state} = loginResult;
+                                        const queryStr = window.location.search;
+                                        if (!queryStr) {
+                                            window.location.href = location.href.substring(0, location.href.indexOf('/login')) + "/stredirect?client_name=" + dingtalkName + "&authCode=" + authCode;
+                                        } else {
+                                            window.location.href = location.href.substring(0, location.href.indexOf('/login')) + "/stredirect" + queryStr + "&client_name=" + dingtalkName + "&authCode=" + authCode;
+                                        }
+                                        // 也可以在不跳转页面的情况下，使用code进行授权
+                                        // console.log(authCode);
+
+
+                                    },
+                                    (errorMsg) => {
+                                        // 这里一般需要展示登录失败的具体原因
+                                        // alert(`DingTalk Login Error: ${errorMsg}`);
+                                    },
+                                );
+                            }
+
+                            var dingtalkKey = [[${dingtalkKey}]];
+                            console.log(dingtalkKey);
+                            if (dingtalkKey != undefined && dingtalkKey != '') {
+                                initQr(dingtalkKey);
+                            }
+                            /*]]>*/
+                        </script>
+                        <script type="text/javascript" th:if="${#lists.contains(methods, 'sms')}">
+                            $('.hmac').on('click', function () {
+                                var that = $(this)
+                                var timeo = 59;
+                                that.text('重新发送' + timeo + 's');
+                                that.attr('disabled', 'disabled');
+                                var timeStop = setInterval(function () {
+                                    timeo--;
+                                    if (timeo > 0) {
+                                        that.text('重新发送' + timeo + 's');
+                                        that.attr('disabled', 'disabled');//禁止点击
+                                    } else {
+                                        timeo = 59;//当减到0时赋值为60
+                                        that.text('发送验证码');
+                                        clearInterval(timeStop);//清除定时器
+                                        that.removeAttr('disabled');//移除属性，可点击
+                                    }
+                                }, 1000)
+                                // $("#send_form").submit();
+                                var user = $("#s_username").val();
+                                console.log(user, user == '')
+                                if (user == undefined || user == '') {
+                                    console.log("user is invalid")
+                                    return;
+                                }
+
+                                var obj = {username: user}
+                                $.post({
+                                    url: location.href.substring(0, location.href.indexOf('/login')) + "/api/pwdless/sendCode",
+                                    data: JSON.stringify(obj),
+                                    dataType: "json",
+                                    contentType: 'application/json',
+                                    success: function (data) {
+                                        console.log(data)
+                                        if (data['data'] == true) {
+                                            UIkit.notification({message: '验证码已发送', pos: 'top-right'})
+                                        } else {
+                                            UIkit.notification({
+                                                message: data.msg,
+                                                status: 'danger',
+                                                pos: 'top-right'
+                                            })
+                                        }
+                                    }
+                                });
+                            })
+                        </script>
+                    </div>
+                </div>
+                <div style="position:absolute;bottom: 0;height: 60px;line-height: 60px"
+                     th:if="${#themes.code('authsaur.login.layout') eq '3'}">
+                    <div class="uk-container uk-container-expand uk-text-center uk-position-relative">
+                        <ul class="uk-subnav tm-subnav uk-flex-inline uk-flex-center uk-margin-remove-bottom"
+                            uk-margin="">
+
+                            <li th:if="${!#strings.isEmpty(#themes.code('authsaur.login.protocol'))}"><a target="_blank"
+                                                                                                         th:href="${#themes.code('authsaur.login.protocol')}"
+                                                                                                         th:text="#{page.login.protocol}">隐私条款</a>
+                            </li>
+                            <li th:if="${!#strings.isEmpty(#themes.code('authsaur.login.help'))}"><a target="_blank"
+                                                                                                     th:href="${#themes.code('authsaur.login.help')}"
+                                                                                                     th:text="#{page.login.help}">问题帮助</a>
+                            </li>
+                            <li th:if="${!#strings.isEmpty(#themes.code('authsaur.i18n.copyright'))}">
+                                <div style="text-transform: none">
+            <span role="img" aria-label="copyright"
+                  style="display: inline-block;color: inherit;font-style: normal;line-height: 0;text-align: center;text-transform: none;text-rendering: optimizelegibility;-webkit-font-smoothing: antialiased;"><svg
+                    viewBox="64 64 896 896" focusable="false" data-icon="copyright" width="1em" height="1em"
+                    fill="currentColor" aria-hidden="true">
+                        <path
+                                d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372zm5.6-532.7c53 0 89 33.8 93 83.4.3 4.2 3.8 7.4 8 7.4h56.7c2.6 0 4.7-2.1 4.7-4.7 0-86.7-68.4-147.4-162.7-147.4C407.4 290 344 364.2 344 486.8v52.3C344 660.8 407.4 734 517.3 734c94 0 162.7-58.8 162.7-141.4 0-2.6-2.1-4.7-4.7-4.7h-56.8c-4.2 0-7.6 3.2-8 7.3-4.2 46.1-40.1 77.8-93 77.8-65.3 0-102.1-47.9-102.1-133.6v-52.6c.1-87 37-135.5 102.2-135.5z">
+                        </path>
+                    </svg></span>
+                                    <script>document.write(new Date().getFullYear());</script>
+                                    <span th:text="#{authsaur.i18n.copyright}" th:remove="tag">POWERED BY</span>
+                                </div>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="uk-padding-small "
+     th:style="${#themes.code('authsaur.login.layout') eq '2' ? 'background-color: var(--cas-theme-primary)':''}"
+     th:if="${#themes.code('authsaur.login.layout') ne '3'}">
+    <div class="uk-container uk-container-expand uk-text-center uk-position-relative">
+        <ul class="uk-subnav tm-subnav uk-flex-inline uk-flex-center uk-margin-remove-bottom" uk-margin="">
+
+            <li th:if="${!#strings.isEmpty(#themes.code('authsaur.login.protocol'))}"><a target="_blank"
+                                                                                         th:href="${#themes.code('authsaur.login.protocol')}"
+                                                                                         th:text="#{page.login.protocol}">隐私条款</a>
+            </li>
+            <li th:if="${!#strings.isEmpty(#themes.code('authsaur.login.help'))}"><a target="_blank"
+                                                                                     th:href="${#themes.code('authsaur.login.help')}"
+                                                                                     th:text="#{page.login.help}">问题帮助</a>
+            </li>
+            <li th:if="${!#strings.isEmpty(#themes.code('authsaur.i18n.copyright'))}">
+                <div style="text-transform: none">
+            <span role="img" aria-label="copyright"
+                  style="display: inline-block;color: inherit;font-style: normal;line-height: 0;text-align: center;text-transform: none;text-rendering: optimizelegibility;-webkit-font-smoothing: antialiased;"><svg
+                    viewBox="64 64 896 896" focusable="false" data-icon="copyright" width="1em" height="1em"
+                    fill="currentColor" aria-hidden="true">
+                        <path
+                                d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372zm5.6-532.7c53 0 89 33.8 93 83.4.3 4.2 3.8 7.4 8 7.4h56.7c2.6 0 4.7-2.1 4.7-4.7 0-86.7-68.4-147.4-162.7-147.4C407.4 290 344 364.2 344 486.8v52.3C344 660.8 407.4 734 517.3 734c94 0 162.7-58.8 162.7-141.4 0-2.6-2.1-4.7-4.7-4.7h-56.8c-4.2 0-7.6 3.2-8 7.3-4.2 46.1-40.1 77.8-93 77.8-65.3 0-102.1-47.9-102.1-133.6v-52.6c.1-87 37-135.5 102.2-135.5z">
+                        </path>
+                    </svg></span>
+                    <script>document.write(new Date().getFullYear());</script>
+                    <span th:text="#{authsaur.i18n.copyright}" th:remove="tag">POWERED BY</span>
+                </div>
+            </li>
+        </ul>
+
+    </div>
+</div>
+
+<!--    <div class="uk-flex uk-flex-center">-->
+<!--        <div style="color: rgba(0,0,0,.45);font-size: 14px;">-->
+<!--        <span role="img" aria-label="copyright"-->
+<!--              style="display: inline-block;color: inherit;font-style: normal;line-height: 0;text-align: center;text-transform: none;text-rendering: optimizelegibility;-webkit-font-smoothing: antialiased;"><svg-->
+<!--                viewBox="64 64 896 896" focusable="false" data-icon="copyright" width="1em" height="1em"-->
+<!--                fill="currentColor" aria-hidden="true">-->
+<!--                    <path-->
+<!--                            d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372zm5.6-532.7c53 0 89 33.8 93 83.4.3 4.2 3.8 7.4 8 7.4h56.7c2.6 0 4.7-2.1 4.7-4.7 0-86.7-68.4-147.4-162.7-147.4C407.4 290 344 364.2 344 486.8v52.3C344 660.8 407.4 734 517.3 734c94 0 162.7-58.8 162.7-141.4 0-2.6-2.1-4.7-4.7-4.7h-56.8c-4.2 0-7.6 3.2-8 7.3-4.2 46.1-40.1 77.8-93 77.8-65.3 0-102.1-47.9-102.1-133.6v-52.6c.1-87 37-135.5 102.2-135.5z">-->
+<!--                    </path>-->
+<!--                </svg></span>-->
+<!--            <script>document.write(new Date().getFullYear());</script>-->
+<!--            <span th:text="${copyright}">Powered by</span>-->
+<!--        </div>-->
+<!--    </div>-->
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    var dingtalkCorpId = [[${dingtalkCorpId}]];
+    var dingtalkLessName = [[${dingtalkLessName}]];
+    console.log(dingtalkCorpId);
+    if (dd.env.platform != 'notInDingTalk' && dingtalkCorpId != undefined && dingtalkCorpId != '') {
+        dd.ready(function () {
+            // dd.ready参数为回调函数，在环境准备就绪时触发，jsapi的调用需要保证在该回调函数触发后调用，否则无效。
+            dd.runtime.permission.requestAuthCode({
+                corpId: dingtalkCorpId,
+                onSuccess: function (info) {
+                    code = info.code // 通过该免登授权码可以获取用户身份
+                    // alert(code);
+                    if (code) {
+                        window.location.href = location.href.substring(0, location.href.indexOf('/login')) + "/stredirect?client_name=" + dingtalkLessName + "&authCode=" + code;
+                    }
+                },
+                onFail: function (err) {
+                    // console.log(err)
+                }
+
+            });
+        });
+    } else {
+        document.getElementById("bdy").style.display = "none";
+    }
+    /*]]>*/
+</script>
+</div>
+</body>
+
+</html>

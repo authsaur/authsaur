@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+<head>
+    <title th:text="#{cas.oauth.confirm.pagetitle}"></title>
+    <style>
+        .DashedConnection {
+            position: relative;
+        }
+
+        .DashedConnection .CircleBadge {
+            position: relative;
+        }
+
+        .CircleBadge--medium {
+            width: 96px;
+            height: 96px;
+        }
+
+        .CircleBadge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            border-radius: 50%;
+            box-shadow: 0 3px 6px rgba(140, 149, 159, 0.15);
+        }
+
+        .CircleBadge-icon {
+            max-width: 60% !important;
+            height: auto !important;
+            max-height: 55% !important;
+        }
+
+        .position-relative {
+            position: relative !important;
+        }
+
+        .DashedConnection::before {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            content: "";
+            border-bottom: 2px dashed #444;
+        }
+    </style>
+</head>
+
+<body id="cas">
+<div layout:fragment="content" >
+    <div class="uk-flex uk-flex-center">
+        <div class="DashedConnection mb-0 mx-auto d-none d-md-block" style="width: 300px;display: block !important;">
+            <div
+                    class="uk-flex uk-flex-center uk-flex-between uk-flex-middle">
+                <div class="CircleBadge CircleBadge--medium">
+                    <img class="CircleBadge-icon"
+                         th:src="${service.logo}" th:if="${service.logo}"
+                         height="50" width="50" alt="">
+                    <img class="CircleBadge-icon"
+                         th:src="@{/default.png}" th:unless="${service.logo}"
+                         height="50" width="50" alt="">
+                </div>
+                <span class="uk-icon-button" uk-icon="check"
+                      style="width: 32px;height: 32px;color:#fff;background-color: #2da44e;z-index: 1;"></span>
+                <div class="CircleBadge CircleBadge--medium" style="background-color: var(--cas-theme-primary);">
+                    <img class="CircleBadge-icon" th:src="@{${#themes.code('authsaur.theme.logo')}}" width="96px"
+                         height="96px" style="z-index: 1;"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="uk-flex uk-flex-center" style="padding-bottom: 40px;padding-top:20px;">
+        <div class="uk-card uk-card-default uk-width-large">
+            <div class="uk-card-header">
+                <div class="uk-grid-small uk-flex-middle" uk-grid>
+                    <div class="uk-width-auto">
+                        <span class="uk-icon-button" uk-icon="icon: user;" style="width: 32px;height:32px;"></span>
+                    </div>
+                    <div class="uk-width-expand">
+                        <h3 class="uk-text-leading uk-text-primary uk-margin-remove-bottom"
+                            th:text="#{screen.oauth.confirm.message(${serviceName})}">禅道项目管理系统软件</h3>
+                        <p class="uk-text-meta uk-margin-remove-top">正在请求访问你的个人信息
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="uk-card-body">
+                <div>
+                    <div id="dynamic" th:if="${dynamic}"
+                         class="my-2 banner banner-warning alert alert-warning d-flex align-items-center">
+                        <i class="mdi mdi-alert fas fa-exclamation-triangle me-2"></i>
+                        <strong th:utext="#{screen.oidc.confirm.dynamic(${dynamicTime})}"/>
+                    </div>
+<!--                    <div id="scopes" th:unless="${#sets.isEmpty(scopes)}">-->
+<!--                        <h3 class="uk-text-lead" th:text="#{screen.oidc.confirm.scopes}"/>-->
+<!--&lt;!&ndash;                        <p th:text="#{screen.oidc.confirm.asksinfo}"/>&ndash;&gt;-->
+
+<!--                        <div th:each="scope : ${scopes}">-->
+<!--                            <span th:id="${scope}">-->
+<!--&lt;!&ndash;                                <i class="mdi mdi-cog fas fa-cog" aria-hidden="true"></i>&ndash;&gt;-->
+<!--                                <strong><code th:text="${scope}"/></strong>-->
+<!--                                <p class="uk-text-meta" th:utext="#{screen.oidc.confirm.scope.__${scope}__}"/>-->
+<!--                            </span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+                    <div id="userInfoClaims" th:unless="${#sets.isEmpty(userInfoClaims)}" class="my-2">
+                        <h3 class="border-bottom bg-primary p-2" th:text="#{screen.oidc.confirm.claims}"/>
+                        <p th:utext="#{screen.oidc.confirm.asksinfo}"/>
+
+                        <div th:each="claim : ${userInfoClaims}">
+                            <span th:id="${claim}">
+                                <i class="mdi mdi-cog fas fa-cog" aria-hidden="true"></i>
+                                <strong><code th:text="${claim}"/></strong>
+                                <p th:utext="#{screen.oidc.confirm.claim.__${claim}__}"/>
+                            </span>
+                        </div>
+                    </div>
+
+
+                    <div th:if="${service.informationUrl}" class="my-2">
+                        <i class="mdi mdi-comment fas fa-comment" aria-hidden="true"></i>
+                        <a id="informationUrl" th:href="${service.informationUrl}"
+                           th:utext="#{screen.oidc.confirm.infourl(${serviceName})}"/>
+                    </div>
+                    <div th:if="${service.privacyUrl}" class="my-2">
+                        <i class="mdi mdi-eye fas fa-eye" aria-hidden="true"></i>
+                        <a id="privacyUrl" th:href="${service.privacyUrl}"
+                           th:utext="#{screen.oidc.confirm.privacyurl(${serviceName})}"/>
+                    </div>
+                </div>
+                <div class="uk-flex uk-flex-between">
+                    <a class="uk-button uk-button-default uk-width-1-1 uk-margin-small-right" id="cancel" name="cancel"
+                       th:href="@{/login}">
+                        <span th:text="#{screen.oauth.confirm.deny}">Cancel</span>
+                    </a>
+
+                    <a th:if="${deniedApprovalUrl}" th:href="@{${deniedApprovalUrl}}"
+                       class="uk-button uk-button-danger uk-width-1-1 uk-margin-small-right" id="deny" name="deny"
+                       href="/">
+                        <span th:utext="#{screen.oauth.confirm.deny}"></span>
+                    </a>
+                    <a class="uk-button uk-button-primary uk-width-1-1"
+                       id="allow"
+                       name="allow"
+                       th:href="@{${callbackUrl}}">
+                        <span th:utext="#{screen.oauth.confirm.allow}"></span>
+                    </a>
+                </div>
+                <!--                <div class="uk-text-center uk-margin-top">-->
+                <!--                    <p class="uk-text-small color-fg-muted mb-0 text-center">Authorizing will redirect to <br><strong-->
+                <!--                            class="color-fg-default">https://login.gitter.im</strong></p>-->
+                <!--                </div>-->
+            </div>
+        </div>
+    </div>
+</div>
+</body>

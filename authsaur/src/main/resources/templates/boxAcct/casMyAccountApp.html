@@ -1,0 +1,146 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+    <!--    <title th:text="#{screen.success.header}">Generic Success View</title>-->
+    <link href="../../static/css/cas.css" rel="stylesheet" th:remove="tag"/>
+    <style>
+        a.uk-link-heading:hover, .uk-link-heading a:hover {
+            color: inherit !important;
+        }
+
+        .app-link {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+        }
+
+        .s_title {
+            margin-top: 10px;
+            margin-bottom: 0px;
+            color: inherit !important;
+            white-space: nowrap;
+        }
+
+
+        .app-card {
+            border-radius: 6px;
+            border: 1px solid #eaebee;
+        }
+
+        .uk-card-default.uk-card-hover:hover {
+            box-shadow: 0 14px 25px rgb(0 0 0 / 16%) !important;
+        }
+
+        @media (min-width: 1200px) {
+            .uk-child-width-1-7\@c > * {
+                width: calc(100% * 1 / 7.001);
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main role="main" class="container mt-3 mb-3">
+    <div layout:fragment="content" class="uk-width-1-1 uk-flex uk-flex-center">
+        <div class="uk-width-1-1">
+            <div class="uk-width-expand@m  uk-padding-large1">
+                <script type="text/javascript" th:inline="javascript">
+                    var linkUri = /*[[@{/api/saml/samluri}]]*/;
+
+                    function gotoSaml(id) {
+                        $.get({
+                            url: linkUri + '?id=' + id,
+                            dataType: "json",
+                            contentType: 'application/json',
+                            success: function (data) {
+                                if (data['data'] != undefined && data['data'] != null) {
+                                    window.open(data['data']);
+                                }
+                            }
+                        });
+
+                    }
+                </script>
+                <div th:each="group,groupStat : ${authorizedServiceGroups}">
+                    <div th:if="${groupStat.index} eq 0" style="max-width: 1200px;margin: 0 auto;">
+                        <div class="item" style="padding-left: 0px;padding: 0 20px;">
+                            <h4 th:if="${group.name}" th:text="${group.name}">Title</h4>
+<!--                            <h4 th:unless="${group.name}">我的应用</h4>-->
+                        </div>
+                    </div>
+                    <div th:unless="${groupStat.index} eq 0"
+                         style="max-width: 1200px;margin: 0 auto;padding-top: 40px;">
+                        <div class="item" style="padding-left: 0px;padding: 0 20px;">
+                            <h4 th:if="${group.name}" th:text="${group.name}">Title</h4>
+<!--                            <h4 th:unless="${group.name}">我的应用</h4>-->
+                        </div>
+                    </div>
+                    <div class="uk-grid uk-grid-match uk-child-width-1-4@s uk-child-width-1-6@m uk-child-width-1-7@c uk-child-width-1-2 uk-flex-left uk-text-center"
+                         uk-grid style="max-width: 1200px;margin: 0 auto;">
+                        <div class="item" style="padding-left: 0px;padding: 0 20px;"
+                             th:each="service : ${group.services}">
+                            <div class="uk-card uk-card-hover uk-card-small uk-card-default uk-card-body app-card"
+                                 style="padding: 0;width: 100%;height:0;padding-bottom: 100%;position: relative;box-shadow: none;">
+                                <!--                            <div th:if="${service.description != null}" class="uk-card-badge uk-text-center" style="background-color: #fff;color: #777;">-->
+                                <!--                                <span uk-icon="more" id="more"></span>-->
+                                <!--                                <script type="text/javascript" th:inline="javascript">-->
+                                <!--                                        var message = /*[[${service.description}]]*/;-->
+                                <!--                                        UIkit.tooltip(document.getElementById("more"), {title: message, pos: 'right'});-->
+                                <!--                                </script>-->
+                                <!--                            </div>-->
+                                <a class="uk-link-heading app-link" th:href="${service.homePage}"
+                                   th:if="${service.homePage != null}"
+                                   target="_blank">
+                                    <img th:id="${'service' + service.id}" th:if="${service.logo != null}"
+                                         th:src="${service.logo}"
+                                         height="48" style="height: 48px">
+                                    <img th:id="${'service' + service.id}" th:unless="${service.logo != null}"
+                                         th:src="@{/default.png}"
+                                         height="48" style="height: 48px">
+                                    <p th:text="${service.name}"
+                                       th:uk-tooltip="'title: '+ ${service.name} + '; pos: bottom'"
+                                       class="s_title uk-text-truncate"></p>
+                                </a>
+                                <a class="uk-link-heading app-link"  th:href="@{'/api/saml/samluri?id=' + ${service.id}}"
+                                   th:if="${(service.homePage == null) && (service.saml != null)}"
+                                   target="_blank"
+                                >
+                                    <img th:id="${'service' + service.id}" th:if="${service.logo != null}"
+                                         th:src="${service.logo}"
+                                         height="48" style="height: 48px">
+                                    <img th:id="${'service' + service.id}" th:unless="${service.logo != null}"
+                                         th:src="@{/default.png}"
+                                         height="48" style="height: 48px">
+                                    <p th:text="${service.name}"
+                                       th:uk-tooltip="'title: '+ ${service.name} + '; pos: bottom'"
+                                       class="s_title uk-text-truncate"></p>
+                                </a>
+
+                                <a class="uk-link-heading app-link"
+                                   th:if="${(service.homePage == null) && (service.saml == null)}"
+                                >
+                                    <img th:id="${'service' + service.id}" th:if="${service.logo != null}"
+                                         th:src="${service.logo}"
+                                         height="48" style="height: 48px">
+                                    <img th:id="${'service' + service.id}" th:unless="${service.logo != null}"
+                                         th:src="@{/default.png}"
+                                         height="48" style="height: 48px">
+                                    <p th:text="${service.name}"
+                                       th:uk-tooltip="'title: '+ ${service.name} + '; pos: bottom'"
+                                       class="s_title uk-text-truncate"></p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

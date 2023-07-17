@@ -1,0 +1,7 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  org.apereo.cas.config.AuthsaurOverlayConfiguration,\
+  org.apereo.cas.config.AuthsaurTicketsConfiguration,\
+  org.apereo.cas.config.AuthsaurLoginOutWebflowConfiguration,\
+  org.apereo.cas.config.AuthsaurDelegatedAuthenticationWebflowConfiguration,\
+  org.apereo.cas.config.AuthsaurDelegatedRedirectConfiguration,\
+  org.apereo.cas.config.FixLocalResolveConfiguration

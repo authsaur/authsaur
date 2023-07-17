@@ -1,0 +1,34 @@
+<!--<script type="text/javascript" th:src="@{#{webjars.jquery.js}}"></script>-->
+<!-- Insert this line above script imports  -->
+<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+<!-- normal script imports etc  -->
+<script th:src="@{/js/jquery-3.6.4.min.js}"></script>
+
+<span th:remove="tag" th:if="${'true' == #strings.defaultString(#themes.code('cas.js.core.enabled'), 'true')}">
+    <span th:replace="fragments/includes :: javascript">
+        <a href="fragments/includes.html">Theme</a> fragment will go here
+    </span>
+</span>
+
+<span th:remove="tag" th:each="file : ${#strings.arraySplit(#themes.code('cas.standard.js.file'), ',')}">
+    <script type="text/javascript" th:src="@{${file}}"></script>
+</span>
+
+<script th:src="@{/js/jquerycookie.min.js}"></script>
+<!-- Insert this line after script imports -->
+<script>if (window.module) module = window.module;</script>
+
+
+<script th:inline="javascript">
+    if (typeof resourceLoadedSuccessfully === "function") {
+        resourceLoadedSuccessfully();
+    }
+    $(function() {
+        typeof cssVars === "function" && cssVars({onlyLegacy: true});
+    })
+</script>
+<script src="https://g.alicdn.com/dingding/h5-dingtalk-login/0.21.0/ddlogin.js"></script>
+<!--<script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>-->
+
+<script th:replace="fragments/googleanalytics :: ga"></script>

@@ -1,0 +1,4 @@
+.DS_Store
+.idea
+authsaur-dashboard/authsaur-admin-api/.mvn/
+authsaur-dashboard/web/dist.zip

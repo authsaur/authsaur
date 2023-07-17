@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+    <title th:text="#{screen.error.page.title.requestunsupported}">Error - Unsupported Request</title>
+    <link href="../../static/css/cas.css" rel="stylesheet" th:remove="tag"/>
+</head>
+
+<body>
+<main role="main" class="container mt-3 mb-3">
+    <div layout:fragment="content">
+        <div class="uk-card uk-card-default uk-width-auto" style="box-shadow: none;background-color: transparent">
+            <div class="uk-card-media-top uk-flex uk-flex-center">
+                <img th:src="@{/images/error.svg}" width="360" alt="">
+            </div>
+            <div class="uk-card-body uk-text-center">
+                <h3 class="uk-card-title uk-text-danger" th:utext="#{screen.error.page.requestunsupported}">The request
+                    type or syntax is not supported.</h3>
+                <div class="uk-text-meta">
+                    <p class="uk-text-meta" th:utext="#{screen.error.page.permissiondenied}">You do not have permission
+                        to view this page.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

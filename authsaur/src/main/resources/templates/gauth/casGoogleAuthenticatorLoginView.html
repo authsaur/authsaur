@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+    <title th:text="#{cas.mfa.googleauth.pagetitle}">Google Authentication View</title>
+    <link href="../../static/css/cas.css" rel="stylesheet" th:remove="tag"/>
+</head>
+
+<body>
+<main role="main" class="container mt-3 mb-3">
+    <div layout:fragment="content" class="uk-flex uk-flex-center">
+        <div class="uk-card uk-card-default uk-card-body">
+            <h3 class="uk-card-title uk-margin-remove" th:text="#{screen.authentication.gauth.login.title}">二次验证</h3>
+            <p class="uk-text-meta" th:text="#{screen.authentication.gauth.login.desc}">打开移动设备上的双重身份验证器应用程序，以查看您的身份验证码。</p>
+            <div class="uk-card-body uk-padding-remove">
+                <form class="uk-form-stacked" method="post" id="fm1" th:object="${credential}"
+                      th:action="@{/login}">
+                    <div class="uk-alert-danger" uk-alert th:if="${#fields.hasErrors('*')}">
+                        <button class="uk-alert-close" type="button" uk-close></button>
+                        <p th:each="err : ${#fields.errors('*')}" th:utext="${err + ' '}">Example
+                            error</p>
+                    </div>
+                    <input type="hidden" name="_eventId_submit" value="Login"/>
+                    <input type="hidden" name="execution" th:value="${flowExecutionKey}"/>
+                    <input type="hidden" name="geolocation"/>
+                    <div class="uk-margin">
+                        <div class="uk-form-controls">
+                            <div class="uk-inline uk-width-1-1">
+                                <input class="uk-input" name="token"
+                                       th:field="*{token}"
+                                       th:placeholder="#{screen.authentication.gauth.login.placeholder}"
+                                       required autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="accountId" name="accountId" size="25"
+                           autocomplete="off"
+                           th:field="*{accountId}"/>
+                    <script type="text/javascript" th:inline="javascript">
+                        /*<![CDATA[*/
+                        let accountId = /*[[${registeredDevice.id}]]*/;
+                        document.getElementById("accountId").value = accountId;
+                        /*]]>*/
+                    </script>
+                    <div class="mdc-text-field-helper-line caps-warn">
+                        <p
+                                class="mdc-text-field-helper-text form-text text-small mdc-text-field-helper-text--persistent mdc-text-field-helper-text--validation-msg text-danger">
+                            <span th:utext="#{screen.capslock.on}"/>
+                        </p>
+                    </div>
+                    </section>
+
+                    <div class="uk-margin">
+                        <div class="uk-form-controls">
+                            <div class="uk-inline  uk-width-1-1">
+                                <button class="uk-button uk-button-primary  uk-width-1-1"
+                                        accesskey="l"
+                                        id="login" th:text="#{screen.welcome.button.verify}">
+                                    验证
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-margin">
+                        <div class="uk-form-controls">
+                            <div class="uk-inline  uk-width-1-1">
+                                <a class="uk-link uk-button uk-padding-remove"
+                                   accesskey="l"
+                                   name="cancel"
+                                   onclick="location.href = location.pathname;"
+                                   id="cancel" th:text="#{screen.welcome.button.cancel}">
+                                    返回
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <span th:if="${registeredDevices}">
+            <p>
+            <hr width="75%">
+            <p th:utext="#{screen.authentication.gauth.selanotherdevice(${registeredDevice.name})}"></p>
+            <form method="post" id="fm3">
+                <input type="hidden" name="_eventId_select" value="select"/>
+                <input type="hidden" name="execution" th:value="${flowExecutionKey}"/>
+                <button id="selectDeviceButton" class="mdc-button mdc-button--raised btn btn-primary me-2"
+                        accesskey="s">
+                    <span class="mdc-button__label"
+                          th:text="#{screen.authentication.gauth.selectdevice}">Select Device</span>
+                </button>
+            </form>
+        </span>
+
+                <form method="post" id="fm2" th:if="${gauthMultipleDeviceRegistrationEnabled}">
+                    <p>
+                    <hr width="75%">
+                    <p th:utext="#{screen.authentication.gauth.reganotherdevice}"></p>
+                    <input type="hidden" name="_eventId_register" value="register"/>
+                    <input type="hidden" name="execution" th:value="${flowExecutionKey}"/>
+                    <button class="mdc-button mdc-button--raised btn btn-primary me-2" id="register" type="submit"
+                            name="register" accesskey="r" value="Register">
+                        <span class="mdc-button__label" th:text="#{screen.welcome.button.register}">Register</span>
+                    </button>
+                </form>
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

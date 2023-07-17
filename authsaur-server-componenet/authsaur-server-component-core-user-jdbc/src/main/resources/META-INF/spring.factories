@@ -1,0 +1,6 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.deepoove.authsaur.config.JpaUserStorageConfiguration,\
+  com.deepoove.authsaur.config.JpaAppStorageConfiguration,\
+  com.deepoove.authsaur.config.JpaAppConfigStorageConfiguration,\
+  com.deepoove.authsaur.config.JpaOrgStorageConfiguration,\
+  com.deepoove.authsaur.config.JpaOrgUserStorageConfiguration

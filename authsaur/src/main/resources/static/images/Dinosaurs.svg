@@ -1,0 +1,27 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="680" height="383">
+	<title>template</title>
+	<style>
+		tspan { white-space:pre } 
+		.t0 { font-size: 52px;fill: #ffffff;font-weight: 700;font-family: "SourceHanSansSC-Bold", "Source Han Sans SC" } 
+		.t1 { font-size: 52px;fill: #cccccc;font-weight: 700;font-family: "SourceHanSansSC-Bold", "Source Han Sans SC" } 
+		.t2 { font-size: 120px;fill: #ffffff;font-weight: 900;font-family: "SourceHanSansSC-Heavy", "Source Han Sans SC" } 
+	</style>
+	<text id="开源、自由  低成本、高可用  安全、私有云" style="transform: matrix(1,0,0,1,49.333,442)" >
+		<tspan x="0" y="0" class="t0">开源</tspan><tspan  y="0" class="t0">、</tspan><tspan  y="0" class="t0">自由</tspan><tspan  y="0" class="t0">
+</tspan>
+		<tspan x="0" y="124.8" class="t0">低成本</tspan><tspan  y="124.8" class="t0">、</tspan><tspan  y="124.8" class="t0">高可用</tspan><tspan  y="124.8" class="t0">
+</tspan>
+		<tspan x="0" y="249.6" class="t0">安全</tspan><tspan  y="249.6" class="t0">、</tspan><tspan  y="249.6" class="t0">私有</tspan><tspan  y="249.6" class="t0">云</tspan><tspan  y="249.6" class="t0">
+</tspan>
+	</text>
+	<text id="让每个企业拥有私有的身份和访问管理（IAM）" style="transform: matrix(1,0,0,1,51,241)" >
+		<tspan x="0" y="0" class="t1">让</tspan><tspan  y="0" class="t1">每个</tspan><tspan  y="0" class="t1">企业</tspan><tspan  y="0" class="t1">拥有</tspan><tspan  y="0" class="t1">私有</tspan><tspan  y="0" class="t1">的</tspan><tspan  y="0" class="t1">身份</tspan><tspan  y="0" class="t1">和</tspan><tspan  y="0" class="t1">访问</tspan><tspan  y="0" class="t1">管理</tspan><tspan  y="0" class="t1">（</tspan><tspan  y="0" class="t1">I</tspan><tspan  y="0" class="t1">A</tspan><tspan  y="0" class="t1">M</tspan><tspan  y="0" class="t1">）</tspan><tspan  y="0" class="t1">
+</tspan>
+	</text>
+	<text id="" style="transform: matrix(1,0,0,1,-264,274)" >
+	</text>
+	<text id="Auth dinosaur" style="transform: matrix(1,0,0,1,54.333,106)" >
+		<tspan x="0" y="0" class="t2">A</tspan><tspan  y="0" class="t2">u</tspan><tspan  y="0" class="t2">t</tspan><tspan  y="0" class="t2">h</tspan><tspan  y="0" class="t2"> </tspan><tspan  y="0" class="t2">d</tspan><tspan  y="0" class="t2">i</tspan><tspan  y="0" class="t2">n</tspan><tspan  y="0" class="t2">o</tspan><tspan  y="0" class="t2">s</tspan><tspan  y="0" class="t2">a</tspan><tspan  y="0" class="t2">u</tspan><tspan  y="0" class="t2">r
+</tspan>
+	</text>
+</svg>

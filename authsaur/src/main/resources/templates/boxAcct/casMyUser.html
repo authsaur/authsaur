@@ -1,0 +1,477 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+    <!--    <title th:text="#{screen.success.header}">Generic Success View</title>-->
+    <link href="../../static/css/cas.css" rel="stylesheet" th:remove="tag"/>
+    <style>
+        .uk-tab > .uk-active > a {
+            color: #333;
+            border-color: var(--cas-theme-primary);
+            background: #e6f7ff;
+        }
+
+        .uk-tab-left > li.uk-active > a {
+            color: var(--cas-theme-primary);
+        }
+
+        .uk-tab-left > li > a {
+            padding: 16px 40px;
+        }
+
+        .uk-nav-primary > li > a {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .uk-tab > * > a {
+            font-size: 14px !important;
+        }
+
+        .app-link {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .s_title {
+            margin-top: 8px;
+            margin-bottom: 0px;
+            color: inherit !important;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+
+        .uk-description-list > dt {
+            font-size: 15px !important;
+            font-weight: 400 !important;
+        }
+
+        .uk-description-list > dd {
+            font-size: 14px;
+        }
+
+
+        /*.app-card {*/
+        /*    border-radius: 6px;*/
+        /*    border: 1px solid #eaebee;*/
+        /*}*/
+
+        .uk-card-default.uk-card-hover:hover {
+            box-shadow: 0 14px 25px rgb(0 0 0 / 16%) !important;
+        }
+
+        @media (min-width: 1500px) {
+            .uk-child-width-1-6\@c > * {
+                width: calc(100% * 1 / 6.001) !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main role="main" class="container mt-3 mb-3">
+    <div layout:fragment="content" class="uk-width-1-1 uk-flex uk-flex-center">
+        <div class="uk-width-4-5@m uk-width-1-1">
+            <!-- <div class="uk-card-body"> -->
+            <div uk-grid class="uk-grid-small uk-flex uk-flex-center">
+                <div class="uk-width-auto@m">
+
+                    <div class="uk-card uk-card-default uk-card-body" style="">
+                        <div class="uk-grid-small uk-flex-middle uk-padding-small" uk-grid>
+                            <div class="uk-width-auto">
+                                <!-- <img class="uk-border-circle" width="68" height="68" src="images/avatar.png"> -->
+                                <span th:unless="${authentication.principal.attributes['avatar'] != null}"
+                                      class="uk-icon-button" uk-icon="icon: user; ratio: 2"
+                                      style="width: 68px;height:68px;"></span>
+                                <img th:if="${authentication.principal.attributes['avatar'] != null}"
+                                     class="uk-border-circle" width="68" height="68"
+                                     th:src="${authentication.principal.attributes['avatar'][0]}">
+                            </div>
+                            <div class="uk-width-expand">
+                                <h3 class="uk-card-title uk-margin-remove-bottom">
+                                <span th:if="${not #lists.isEmpty(authentication.principal.attributes['uname'])}"
+                                      th:text="${authentication.principal.attributes['uname'][0]}">
+                                </span>
+                                </h3>
+                                <p class="uk-text-meta uk-margin-remove-top"
+                                   th:if="${not #lists.isEmpty(authentication.principal.attributes['actualid'])}"
+                                   th:text="${authentication.principal.attributes['actualid'][0]}">
+                                </p>
+                            </div>
+                        </div>
+                        <ul class="uk-tab-left uk-nav-default uk-nav-primary1"
+                            uk-tab="connect: #component-tab-left; animation: uk-animation-fade"
+                            style="flex-wrap: inherit">
+                            <!--                            <li><a href="#"><span class="uk-margin-small-right" uk-icon="grid"></span>我的应用</a></li>-->
+                            <li><a href="#"><span class="uk-margin-small-right" uk-icon="user"></span><span
+                                    th:text="#{page.user.info}">基本信息</span></a></li>
+
+                            <!--                            <li><a href="#"><span class="uk-margin-small-right" uk-icon="lock"></span>账号绑定</a></li>-->
+                            <li th:if="${otpEnabled}  ne '-1'"><a href="#"><span class="uk-margin-small-right"
+                                                                                 uk-icon="lock"></span><span
+                                    th:text="#{page.user.mfa}">多因素认证</span></a>
+                            </li>
+                            <!--                            <li><a href="#"><span class="uk-margin-small-right"-->
+                            <!--                                                  uk-icon="settings"></span>应用面板设置</a>-->
+                            <!--                            </li>-->
+                            <li><a href="#"><span class="uk-margin-small-right" uk-icon="history"></span><span
+                                    th:text="#{page.user.log}">近期活动</span></a>
+                            </li>
+                            <!-- <li><a href="#">Item</a></li> -->
+                        </ul>
+                    </div>
+                </div>
+                <div class="uk-width-expand@m" style="max-width: 880px">
+                    <ul id="component-tab-left" class="uk-switcher">
+                        <li>
+                            <div class="uk-card uk-card-default">
+                                <div class="uk-card-header"><h3 class="uk-card-title" th:text="#{page.user.info}">
+                                    基本信息</h3>
+                                </div>
+                                <div class="uk-card-body">
+                                    <dl class="uk-description-list ">
+                                        <!--                                        <dt-->
+                                        <!--                                                style="margin-bottom: 8px;">ID-->
+                                        <!--                                        </dt>-->
+                                        <!--                                        <dd th:utext="${authentication.principal.id}">-->
+                                        <!--                                            Lorem ipsum dolor-->
+                                        <!--                                        </dd>-->
+
+                                        <!--                                        <dt th:if="${authentication.principal.attributes['DISPLAYNAME'] != null}"-->
+                                        <!--                                            style="margin-bottom: 8px;" th:text="#{screen.account.name}">姓名-->
+                                        <!--                                        </dt>-->
+                                        <!--                                        <dd th:utext="${authentication.principal.attributes['DISPLAYNAME']}">-->
+                                        <!--                                            Lorem ipsum dolor-->
+                                        <!--                                            sit amet, consectetur adipiscing elit.-->
+                                        <!--                                        </dd>-->
+                                        <!--                                        <dt th:if="${authentication.principal.attributes['name'] != null}"-->
+                                        <!--                                            style="margin-bottom: 8px;">姓名-->
+                                        <!--                                        </dt>-->
+                                        <!--                                        <dd th:utext="${#strings.abbreviate(authentication.principal.attributes['name'], 80)}">-->
+                                        <!--                                            Lorem ipsum dolor-->
+                                        <!--                                            sit amet, consectetur adipiscing elit.-->
+                                        <!--                                        </dd>-->
+
+                                        <dt th:if="${not #lists.isEmpty(authentication.principal.attributes['uname'] )}"
+                                            th:text="#{screen.account.name}">姓名
+                                        </dt>
+                                        <dd th:if="${not #lists.isEmpty(authentication.principal.attributes['uname'] )}"
+                                            th:utext="${#strings.defaultString(authentication.principal.attributes['uname'][0], '-')}"
+                                        >
+                                        </dd>
+
+                                        <dt th:if="${not #lists.isEmpty(authentication.principal.attributes['umail'] )}"
+                                            th:text="#{screen.account.mail}">邮箱
+                                        </dt>
+                                        <dd th:if="${not #lists.isEmpty(authentication.principal.attributes['umail'] )}"
+                                            th:utext="${#strings.defaultString(authentication.principal.attributes['umail'][0], '-')}">
+                                        </dd>
+
+                                        <dt th:if="${not #lists.isEmpty(authentication.principal.attributes['uphone'] )}"
+                                            th:text="#{screen.account.phone}">手机号
+                                        </dt>
+                                        <dd th:if="${not #lists.isEmpty(authentication.principal.attributes['uphone'] )}"
+                                            th:utext="${#strings.defaultString(authentication.principal.attributes['uphone'][0], '-')}"
+                                        >
+                                        </dd>
+                                        <dt th:if="${dept != null}"
+                                            th:text="#{screen.account.dept}">部门
+                                        </dt>
+                                        <dd th:if="${dept != null}"
+                                            th:utext="${#strings.defaultString(dept, '-')}"
+                                        >
+                                        </dd>
+
+                                        <dt th:if="${authentication.attributes['authenticationDate'] != null}"
+                                            th:text="#{page.user.info.authdate}">登录时间
+                                        </dt>
+                                        <dd th:utext="${#dates.format(authentication.attributes['authenticationDate'][0] * 1000, 'yyyy-MM-dd HH:mm:ss')}">
+                                            2023-09-09
+                                        </dd>
+                                        <dt th:text="#{page.user.info.type}">登录方式
+                                        </dt>
+                                        <dd style="text-transform: uppercase;"
+                                            th:if="${authentication.principal.attributes['urelated'] != null and authentication.principal.attributes['urelated'][0]['uauthType'] != null}"
+                                            th:utext="${authentication.principal.attributes['urelated'][0]['uauthType'][0]}">
+                                        </dd>
+                                        <dd style="text-transform: uppercase;"
+                                            th:if="${(authentication.principal.attributes['urelated'] == null or authentication.principal.attributes['urelated'][0]['uauthType'] == null) and authentication.principal.attributes['uauthType'] != null}"
+                                            th:utext="${authentication.principal.attributes['uauthType'][0]}">
+                                        </dd>
+                                        <div th:if="${authentication.principal.attributes['urelated'] != null and authentication.principal.attributes['urelated'][0]['uauthType'] != null}"
+                                             th:remove="tag">
+                                            <dt th:text="#{page.user.info.related}">关联认证
+                                            </dt>
+                                            <dd>
+                                                是
+                                            </dd>
+                                        </div>
+                                        <!--                                        <dt th:if="${authentication.attributes['authenticationMethod'] != null}"-->
+                                        <!--                                            >登录方式-->
+                                        <!--                                        </dt>-->
+                                        <!--                                        <dd th:if="${authentication.attributes['authenticationMethod'][0]} ne 'DelegatedClientAuthenticationHandler'"-->
+                                        <!--                                            th:utext="${authentication.attributes['authenticationMethod']}">-->
+                                        <!--                                            Lorem ipsum dolor-->
+                                        <!--                                        </dd>-->
+                                        <!--                                        <dd th:if="${authentication.attributes['authenticationMethod'][0]} eq 'DelegatedClientAuthenticationHandler'"-->
+                                        <!--                                            th:utext="${authentication.attributes['clientName']}">-->
+                                        <!--                                            Lorem ipsum dolor-->
+                                        <!--                                        </dd>-->
+                                        <!--                                        <hr/>-->
+                                        <!--                                        <div th:each="attribute : ${authentication.principal.attributes}">-->
+                                        <!--                                            <dt th:utext="${attribute.key}"-->
+                                        <!--                                                style="margin-top:20px;color: #333;font-size: .875rem;font-weight: 400;">-->
+                                        <!--                                                Description term-->
+                                        <!--                                            </dt>-->
+                                        <!--                                            <dd th:utext="${#strings.abbreviate(attribute.value, 80)}">Lorem ipsum dolor-->
+                                        <!--                                                sit amet, consectetur adipiscing elit.-->
+                                        <!--                                            </dd>-->
+                                        <!--                                        </div>-->
+                                        <!--                                        <div th:each="attribute : ${authentication.attributes}">-->
+                                        <!--                                            <dt th:utext="${attribute.key}"-->
+                                        <!--                                                style="margin-top:20px;color: #333;font-size: .875rem;font-weight: 400;">-->
+                                        <!--                                                Description term-->
+                                        <!--                                            </dt>-->
+                                        <!--                                            <dd th:utext="${#strings.abbreviate(attribute.value, 80)}">Lorem ipsum dolor-->
+                                        <!--                                                sit amet, consectetur adipiscing elit.-->
+                                        <!--                                            </dd>-->
+                                        <!--                                        </div>-->
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+
+                        <!--                        <li>-->
+                        <!--                            <div class="uk-card uk-card-default">-->
+                        <!--                                <div class="uk-card-header"><h3 class="uk-card-title">-->
+                        <!--                                    账号绑定</h3>-->
+                        <!--                                </div>-->
+                        <!--                                <div class="uk-card-body">-->
+                        <!--                                    <ul class="uk-list uk-list-large uk-list-striped1 uk-list-divider">-->
+                        <!--                                        <li>-->
+                        <!--                                            <div class="uk-grid-small" uk-grid>-->
+                        <!--                                                <div class="uk-width-auto">-->
+                        <!--                                                    <img class="uk-border-circle" width="48" height="48"-->
+                        <!--                                                         th:src="@{/uikit/images/weibo.svg}">-->
+                        <!--                                                </div>-->
+                        <!--                                                <div class="uk-width-expand">-->
+                        <!--                                                    <span class="uk-text-bold">微博</span>-->
+                        <!--                                                    <p class="uk-text-meta uk-margin-remove-top">-->
+                        <!--                                                        <time-->
+                        <!--                                                                datetime="2016-04-01T19:00">关联个人微博账号进行认证-->
+                        <!--                                                        </time>-->
+                        <!--                                                    </p>-->
+                        <!--                                                </div>-->
+                        <!--                                                <div class="uk-width-auto">-->
+                        <!--                                                    <button class="uk-button uk-button-primary">去绑定</button>-->
+                        <!--                                                </div>-->
+                        <!--                                            </div>-->
+                        <!--                                        </li>-->
+                        <!--                                        <li>-->
+                        <!--                                            <div class="uk-grid-small" uk-grid>-->
+                        <!--                                                <div class="uk-width-auto">-->
+                        <!--                                                    <img class="uk-border-circle" width="48" height="48"-->
+                        <!--                                                         th:src="@{/uikit/images/github.svg}">-->
+                        <!--                                                </div>-->
+                        <!--                                                <div class="uk-width-expand">-->
+                        <!--                                                    <span class="uk-text-bold">GitHub</span>-->
+                        <!--                                                    <p class="uk-text-meta uk-margin-remove-top">-->
+                        <!--                                                        <time-->
+                        <!--                                                                datetime="2016-04-01T19:00">关联个人GitHub账号进行认证-->
+                        <!--                                                        </time>-->
+                        <!--                                                    </p>-->
+                        <!--                                                </div>-->
+                        <!--                                                <div class="uk-width-auto">-->
+                        <!--                                                    <button class="uk-button uk-button-primary">去绑定</button>-->
+                        <!--                                                </div>-->
+                        <!--                                            </div>-->
+                        <!--                                        </li>-->
+                        <!--                                    </ul>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </li>-->
+                        <li th:if="${otpEnabled}  ne '-1'">
+                            <script type="text/javascript" th:inline="javascript">
+                                function Unbind() {
+                                    var link = /*[[@{/api/mfa/}]]*/;
+                                    var text = /*[[#{page.user.mfa.nobind}]]*/;
+                                    $.ajax({
+                                        url: link,
+                                        type: 'delete',
+                                        dataType: "json",
+                                        contentType: 'application/json',
+                                        success: function (data) {
+                                            if (data['success'] == true) {
+                                                $('#unbindBtn').text(text);
+                                                $("#unbindBtn").attr("disabled", true);
+                                                UIkit.modal(document.getElementById("modal-example")).hide();
+                                            }
+                                        }
+                                    });
+                                }
+                            </script>
+                            <div class="uk-card uk-card-default">
+                                <div class="uk-card-header"><h3 class="uk-card-title" th:text="#{page.user.mfa}">
+                                    多因素认证</h3>
+                                </div>
+                                <div class="uk-card-body">
+                                    <ul class="uk-list uk-list-large uk-list-striped1 uk-list-divider">
+                                        <li>
+                                            <div class="uk-grid-small" uk-grid>
+                                                <div class="uk-width-auto">
+                                                    <img width="40" height="40"
+                                                         th:src="@{/uikit/images/otp.svg}">
+                                                </div>
+                                                <div class="uk-width-expand">
+                                                    <span class="uk-text-bold"
+                                                          th:text="#{page.user.mfa.title}">一次性安全码</span>
+                                                    <p class="uk-text-meta uk-margin-remove-top">
+                                                        <time
+                                                                datetime="2016-04-01T19:00"
+                                                                th:text="#{page.user.mfa.desc}">使用 OTP 口令密码进行二次认证
+                                                        </time>
+                                                    </p>
+                                                </div>
+                                                <div class="uk-width-auto">
+                                                    <button th:if="${otpEnabled}  eq '1'" id="unbindBtn"
+                                                            class="uk-button uk-button-danger"
+                                                            uk-toggle="target: #modal-example"
+                                                            th:text="#{page.user.mfa.unbind}">
+                                                        解绑
+                                                    </button>
+                                                    <button th:if="${otpEnabled}  eq '0'" disabled
+                                                            class="uk-button uk-button-danger"
+                                                            th:text="#{page.user.mfa.nobind}">
+                                                        未绑定
+                                                    </button>
+                                                </div>
+                                                <div id="modal-example" uk-modal>
+                                                    <div class="uk-modal-dialog uk-modal-body">
+                                                        <h2 class="uk-text-lead" th:text="#{page.user.mfa.unbind}">
+                                                            解绑</h2>
+                                                        <p th:text="#{page.user.mfa.unbind.desc}">
+                                                            解绑后，你需要重新登录进行绑定。</p>
+                                                        <p class="uk-text-right">
+                                                            <button class="uk-button uk-button-default uk-modal-close"
+                                                                    type="button" th:text="#{page.button.cancel}">Cancel
+                                                            </button>
+                                                            <button class="uk-button uk-button-primary" type="button"
+                                                                    onclick="Unbind()" th:text="#{page.button.confirm}">
+                                                                确定
+                                                            </button>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <!--                        <li>-->
+                        <!--                            <div class="uk-card uk-card-default">-->
+                        <!--                                <div class="uk-card-header"><h3 class="uk-card-title">-->
+                        <!--                                    应用面板设置</h3>-->
+                        <!--                                </div>-->
+                        <!--                                <div class="uk-card-body">-->
+                        <!--                                    <table class="uk-table uk-table-hover uk-table-middle uk-table-divider">-->
+                        <!--                                        <thead>-->
+                        <!--                                        <tr>-->
+                        <!--                                            <th></th>-->
+                        <!--                                            <th>我的应用</th>-->
+                        <!--                                            <th>描述</th>-->
+                        <!--                                            <th class="uk-table-shrink uk-text-nowrap">是否显示</th>-->
+                        <!--                                        </tr>-->
+                        <!--                                        </thead>-->
+                        <!--                                        <tbody>-->
+                        <!--                                        <tr th:each="service : ${authorizedServices}">-->
+                        <!--                                            <td>-->
+                        <!--                                                <img th:id="${'service' + service.id}"-->
+                        <!--                                                     th:if="${service.logo != null}"-->
+                        <!--                                                     class="uk-preserve-width" th:src="${service.logo}"-->
+                        <!--                                                     width="36" height="36">-->
+                        <!--                                                <img th:id="${'service' + service.id}"-->
+                        <!--                                                     th:unless="${service.logo != null}"-->
+                        <!--                                                     class="uk-preserve-width"-->
+                        <!--                                                     th:src="@{/default.png}"-->
+                        <!--                                                     height="36" style="height: 36px">-->
+                        <!--                                            </td>-->
+                        <!--                                            <td class="uk-table-link">-->
+                        <!--                                                <a class="uk-link-reset" href="" th:text="${service.name}">Jira.</a>-->
+                        <!--                                            </td>-->
+                        <!--                                            <td class="uk-table-link">-->
+                        <!--                                                <a class="uk-link-reset" th:text="${service.description}">Jira.</a>-->
+                        <!--                                            </td>-->
+                        <!--                                            <td><a><img class="uk-preserve-width uk-border-circle"-->
+                        <!--                                                        th:src="@{/uikit/images/eye-fill.svg}" width="20" height="20"-->
+                        <!--                                                        alt=""></a>-->
+                        <!--                                            </td>-->
+
+                        <!--                                        </tr>-->
+                        <!--                                        </tbody>-->
+                        <!--                                    </table>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </li>-->
+                        <li>
+                            <div class="uk-card uk-card-default">
+                                <div class="uk-card-header uk-card-small">
+                                    <h3 class="uk-card-title" th:text="#{page.user.log}">近期活动</h3>
+                                </div>
+                                <div class="uk-card-body uk-card-small">
+                                    <table class="uk-table uk-table-small uk-table-divider uk-table-responsive  uk-table-justify">
+                                        <thead>
+                                        <tr>
+                                            <th class="uk-table-shrink"></th>
+                                            <th th:text="#{page.user.log.event}">活动</th>
+                                            <th th:text="#{page.user.log.time}">时间</th>
+                                            <th th:text="#{page.user.log.ip}">访问IP</th>
+                                            <th class="">操作系统</th>
+                                            <th class="">浏览器</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="entry : ${auditLog}">
+
+                                            <td th:if="${#bools.isTrue(entry.result)}"><span class="uk-icon-button"
+                                                                                             uk-icon="check"
+                                                                                             style="width: 24px;height: 24px;color:#fff;background-color: #4caf50;"></span>
+                                            </td>
+                                            <td th:unless="${#bools.isTrue(entry.result)}"><span class="uk-icon-button"
+                                                                                                 uk-icon="close"
+                                                                                                 style="width: 24px;height: 24px;color:#fff;background-color: #f44336;"></span>
+                                            </td>
+                                            <td
+                                                    th:utext="${entry.actionName}">Value
+                                            </td>
+                                            <td
+                                                    th:utext="${#dates.format(entry.whenActionWasPerformed, 'yyyy-MM-dd HH:mm:ss')}">
+                                                Value
+                                            </td>
+
+                                            <td th:utext="${entry.clientIpAddress}">Value
+                                            </td>
+                                            <td th:utext="${entry.os}">os
+                                            </td>
+                                            <td th:text="${entry.browser} + ${entry.browserVer}">Value
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+    <title>Header Fragment</title>
+    <link href="../../static/css/cas.css" rel="stylesheet" th:remove="tag"/>
+</head>
+
+<body>
+<div th:fragment="header">
+
+    <header id="app-bar" class="mdc-top-app-bar mdc-top-app-bar--fixed shadow-sm">
+        <nav class="mdc-top-app-bar__row navbar navbar-dark bg-dark">
+            <div id="header-bar"
+                 class="container-fluid container-fluid d-flex align-items-center justify-content-between">
+                <section class="mdc-top-app-bar__section" style="flex:none">
+                    <span class="cas-brand mx-auto">
+                        <img id="cas-logo" class="cas-logo" th:src="${#themes.code('authsaur.theme.logo')}"/>
+                    </span>
+                    <a id="cas-title" th:href="@{/login}" class="uk-link-heading"><span class="uk-text-lead"
+                                                                                        th:text="#{authsaur.i18n.systemName}"
+                                                                                        style="font-size: 1.4rem;line-height: 1.5;color: rgb(244 244 250);margin-left: 8px;font-weight: 600;"></span>
+                    </a>
+                </section>
+
+                <section style="-webkit-app-region: no-drag;">
+                    <div class="uk-flex uk-flex-right uk-flex-middle">
+                        <div>
+                            <div class="uk-grid-collapse uk-flex-middle uk-margin-right" uk-grid>
+                                <div class="uk-width-auto uk-margin-small-right">
+                                    <a id="avatar_empty" href="" class="uk-icon-button uk-hidden"
+                                       style="color:#333;width: 24px;height:24px;">
+                                        <svg width="18" height="18" viewBox="0 0 20 20"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <circle fill="none" stroke="#000" stroke-width="1.1" cx="9.9" cy="6.4"
+                                                    r="4.4"></circle>
+                                            <path fill="none" stroke="#000" stroke-width="1.1"
+                                                  d="M1.5,19 C2.3,14.5 5.8,11.2 10,11.2 C14.2,11.2 17.7,14.6 18.5,19.2"></path>
+                                        </svg>
+                                    </a>
+                                    <img id="avatar"
+                                         class="uk-border-circle uk-hidden" style="background-color: #f9f9f9" width="28" height="28"
+                                         >
+                                </div>
+                                <div class="uk-width-expand">
+                                    <p id="user" class="uk-text-bold" style="color: #fff;"></p>
+                                </div>
+                                <div
+                                        th:if="${principal != null and principal.id != null}"
+                                        th:text="${principal.id}">
+                                </div>
+
+                            </div>
+                            <div uk-dropdown>
+                                <ul class="uk-nav uk-dropdown-nav">
+                                    <!--                                    <li><h4 style="margin-bottom: 0" th:text="${authentication.principal.id}">Sayi</h4>-->
+                                    <!--                                        <div class="uk-nav-subtitle"-->
+                                    <!--                                             th:if="${authentication.principal.attributes['mail'] != null}"-->
+                                    <!--                                             th:text="${authentication.principal.attributes['mail'][0]}">Sai@163.com-->
+                                    <!--                                        </div>-->
+                                    <!--                                    </li>-->
+                                    <li class="userMenu uk-hidden"><a th:href="@{/app}"
+                                                                      th:text="#{page.menu.app}">应用面板</a></li>
+                                    <li class="userMenu uk-hidden"><a th:href="@{/user}" th:text="#{page.menu.user}">个人中心</a>
+                                    </li>
+                                    <li class="userMenu uk-hidden uk-nav-divider"></li>
+                                    <li><a th:href="@{/logout}"><span class="uk-margin-small-right"
+                                                                      uk-icon="icon: sign-out"></span><span
+                                            th:remove="tag" th:text="#{page.menu.logout}">退出登录</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div style="" class="uk-margin-small-right" id="cas-lang"
+                             th:if="${'true' == #themes.code('authsaur.lang.enabled')}">
+                            <img th:src="@{/uikit/images/lang.svg}" width="22" height="22">
+                            <div uk-dropdown>
+                                <ul class="uk-nav uk-dropdown-nav">
+                                    <li id="zhCN"><a><span role="img" aria-label="简体中文"
+                                                           style="margin-right: 8px;">🇨🇳</span>简体中文</a></li>
+                                    <li id="en"><a><span role="img" aria-label="English"
+                                                         style="margin-right: 8px;">🇺🇸</span>English</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                    <script type="text/javascript">
+                        $("#zhCN>a").click(function () {
+                            $.cookie('language.locale', 'zh-CN', {path: '/'});
+                            location.reload();
+                        });
+                        $("#en>a").click(function () {
+                            $.cookie('language.locale', 'en', {path: '/'});
+                            location.reload();
+                        });
+
+                        var lang = $.cookie('language.locale');
+                        if (lang == 'zh-CN') {
+                            $("#zhCN").addClass('uk-active');
+                            $("#en").removeClass('uk-active');
+                        } else {
+                            $("#zhCN").removeClass('uk-active');
+                            $("#en").addClass('uk-active');
+                        }
+                    </script>
+                    <script type="text/javascript" th:inline="javascript">
+                        var getUser = /*[[@{/api/user/}]]*/;
+                        $.get({
+                            url: getUser,
+                            dataType: "json",
+                            contentType: 'application/json',
+                            success: function (data) {
+                                console.log(data)
+                                if (data['data']['name'] != undefined && data['data']['name'] != '') {
+                                    $("#user").text(data['data']['name']);
+                                } else if (data['data']['userId'] != undefined && data['data']['userId'] != '') {
+                                    $("#user").text(data['data']['userId']);
+                                } else {
+                                    $("#user").text(data['data']['id']);
+                                }
+                                if (data['data']['avatar'] != undefined && data['data']['avatar'] != '') {
+                                    $("#avatar").attr("src", data['data']['avatar']);
+                                    $("#avatar").removeClass("uk-hidden");
+                                } else {
+                                    $("#avatar_empty").removeClass("uk-hidden");
+                                }
+                                $(".userMenu").removeClass("uk-hidden");
+                            },
+                            error: function (xhr, textStatus, errorThrown) {
+                                console.log(xhr);
+                            }
+                        });
+                    </script>
+                </section>
+                <!--                <section class="mdc-top-app-bar__section mdc-top-app-bar__section&#45;&#45;align-end">-->
+                <!--                    <button id="cas-notifications-menu"-->
+                <!--                            th:if="${'true' == #strings.defaultString(#themes.code('cas.notifications-menu.enabled'), 'true')}"-->
+                <!--                            class="mdc-icon-button mdc-top-app-bar__action-item cas-notification-toggle btn btn-outline-light"-->
+                <!--                            aria-label="Bookmark this page"-->
+                <!--                            data-bs-toggle="modal"-->
+                <!--                            data-bs-target="#cas-notification-dialog">-->
+                <!--                        <span class="mdi mdi-bell-alert fa fa-bell"></span>-->
+                <!--                        <span class="visually-hidden">notifications</span>-->
+                <!--                        <i id="notifications-count" class="notifications-count count">2</i>-->
+                <!--                    </button>-->
+
+                <!--                <a id="cas-user-account"-->
+                <!--                   th:href="@{/account}"-->
+                <!--                   th:if="${ticketGrantingTicketId != null}"-->
+                <!--                   class="mdc-icon-button mdc-top-app-bar__action-item"-->
+                <!--                   aria-label="User Account">-->
+                <!--                    <span class="mdi mdi-account-group"></span>-->
+                <!--                    <span class="visually-hidden">user account</span>-->
+                <!--                </a>-->
+                <!--                </section>-->
+            </div>
+        </nav>
+    </header>
+    <aside id="app-drawer"
+           th:if="${'true' == #strings.defaultString(#themes.code('cas.drawer-menu.enabled'), 'true')}"
+           class="mdc-drawer mdc-drawer--dismissible mdc-drawer--modal offcanvas offcanvas-start">
+        <div class="mdc-drawer__header offcanvas-header flex-column">
+            <h3 class="mdc-drawer__title offcanvas-title"
+                th:text="${#strings.defaultString(#themes.code('cas.theme.name'), 'CAS')}">CAS</h3>
+            <h6 class="mdc-drawer__subtitle offcanvas-title"
+                th:text="${#strings.defaultString(#themes.code('cas.theme.description'), 'Central Authentication Service')}">
+                Central Authentication Service</h6>
+        </div>
+        <div class="mdc-drawer__content offcanvas-body">
+            <nav class="mdc-list list-group list-group-flush">
+                <a th:href="@{/actuator}" class="mdc-list-item list-group-item list-group-item-action">
+                    <i class="mdi mdi-cogs fa fa-cogs"></i>&nbsp;
+                    <span class="mdc-list-item__text">[[#{cas.login.resources.endpoints}]]</span>
+                </a>
+                <hr class="mdc-list-divider bs-hide"/>
+                <a class="mdc-list-item list-group-item list-group-item-action" href="https://apereo.github.io/cas">
+                    <i class="mdi mdi-file-code-outline fas fa-file-code"></i>&nbsp;
+                    <span class="mdc-list-item__text">[[#{cas.login.resources.wiki}]]</span>
+                </a>
+                <a class="mdc-list-item list-group-item list-group-item-action"
+                   href="https://github.com/apereo/cas/pulls">
+                    <i class="mdi mdi-call-merge fas fa-code-branch"></i>&nbsp;
+                    <span class="mdc-list-item__text">[[#{cas.login.resources.pulls}]]</span>
+                </a>
+                <a class="mdc-list-item list-group-item list-group-item-action"
+                   href="https://apereo.github.io/cas/developer/Contributor-Guidelines.html">
+                    <i class="mdi mdi-information fas fa-info-circle"></i>&nbsp;
+                    <span class="mdc-list-item__text">[[#{cas.login.resources.contribguide}]]</span>
+                </a>
+                <a class="mdc-list-item list-group-item list-group-item-action"
+                   href="https://apereo.github.io/cas/Support.html">
+                    <i class="mdi mdi-help-circle fas fa-question-circle"></i>&nbsp;
+                    <span class="mdc-list-item__text">[[#{cas.login.resources.support}]]</span>
+                </a>
+                <a class="mdc-list-item list-group-item list-group-item-action"
+                   href="https://apereo.github.io/cas/Mailing-Lists.html">
+                    <i class="mdi mdi-email-newsletter fas fa-envelope-open-text"></i>&nbsp;
+                    <span class="mdc-list-item__text">[[#{cas.login.resources.mailinglist}]]</span>
+                </a>
+                <a class="mdc-list-item list-group-item list-group-item-action" href="https://gitter.im/apereo/cas">
+                    <i class="mdi mdi-message-text fas fa-comment-dots"></i>&nbsp;
+                    <span class="mdc-list-item__text">[[#{cas.login.resources.chat}]]</span>
+                </a>
+                <a class="mdc-list-item list-group-item list-group-item-action" href="https://apereo.github.io/">
+                    <i class="mdi mdi-post fas fa-newspaper"></i>&nbsp;
+                    <span class="mdc-list-item__text">[[#{cas.login.resources.blog}]]</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <script>var countMessages = 0;</script>
+    <div
+            th:if="${'true' == #strings.defaultString(#themes.code('cas.notifications-menu.enabled'), 'true')}"
+            class="mdc-dialog cas-notification-dialog modal"
+            id="cas-notification-dialog" role="alertdialog"
+            aria-modal="true" aria-labelledby="notif-dialog-title"
+            aria-describedby="notif-dialog-content">
+        <div class="mdc-dialog__container modal-dialog">
+            <div class="mdc-dialog__surface modal-content">
+                <h1 class="mdc-dialog__title mt-lg-2 modal-header modal-title" id="notif-dialog-title">
+                    Notifications
+                </h1>
+                <div class="mdc-dialog__content modal-body" id="notif-dialog-content">
+                    <div class="cas-notification-message mdc-typography--body1" th:if="${staticAuthentication}">
+                        <script>countMessages++;</script>
+                        <h6 class="mdc-typography--headline6 mdi mdi-alert-circle fas fa-exclamation-circle"
+                            th:utext="#{screen.defaultauthn.title}"/>
+                        <p class="text text-wrap small" th:utext="#{screen.defaultauthn.heading}">
+                            <i class="mdi mdi-google fas fa-google"></i>
+                            Static AuthN is ONLY useful for demo purposes. It is recommended that you connect CAS to
+                            LDAP,
+                            JDBC, etc
+                            instead.
+                        </p>
+                    </div>
+                    <div class="cas-notification-message mdc-typography--body1"
+                         th:if="${not #httpServletRequest.secure}">
+                        <h6 class="mdc-typography--headline6 mdi mdi-alert-circle fas fa-exclamation-circle"
+                            th:utext="#{screen.nonsecure.title}"/>
+                        <script>countMessages++;</script>
+                        <p class="text-wrap small" th:utext="#{screen.nonsecure.message}">
+                            Unsure Connection
+                        </p>
+                    </div>
+                </div>
+                <footer class="mdc-dialog__actions modal-footer">
+                    <button type="button" class="mdc-button mdc-dialog__button btn btn-primary"
+                            data-mdc-dialog-action="accept"
+                            data-mdc-dialog-button-default
+                            data-bs-dismiss="modal">
+                        <span class="mdc-button__label">OK</span>
+                    </button>
+                </footer>
+            </div>
+        </div>
+        <div class="mdc-dialog__scrim"></div>
+    </div>
+
+    <script type="text/javascript">
+
+        (function (material) {
+            var header = {
+                init: function () {
+                    header.attachTopbar();
+                    material.autoInit();
+                },
+                attachDrawer: function () {
+                    var elm = document.getElementById('app-drawer');
+                    if (elm != null) {
+                        var drawer = material.drawer.MDCDrawer.attachTo(elm);
+                        var closeDrawer = function (evt) {
+                            drawer.open = false;
+                        };
+                        drawer.foundation.handleScrimClick = closeDrawer;
+                        document.onkeydown = function (evt) {
+                            evt = evt || window.event;
+                            if (evt.keyCode == 27) {
+                                closeDrawer();
+                            }
+                        };
+                        header.drawer = drawer;
+                        return drawer;
+                    }
+                    return undefined;
+                },
+                attachTopbar: function (drawer) {
+
+                    var drawer = header.attachDrawer();
+                    var dialog = header.attachNotificationDialog();
+
+                    if (drawer != undefined) {
+                        header.attachDrawerToggle(drawer);
+                    }
+                    if (dialog != undefined) {
+                        header.attachNotificationToggle(dialog);
+                    }
+                },
+                checkCaps: function (ev) {
+                    var s = String.fromCharCode(ev.which);
+                    if (s.toUpperCase() === s && s.toLowerCase() !== s && !ev.shiftKey) {
+                        ev.target.parentElement.classList.add('caps-on');
+                    } else {
+                        ev.target.parentElement.classList.remove('caps-on');
+                    }
+                },
+                attachDrawerToggle: function (drawer) {
+                    let appBar = document.getElementById('app-bar');
+                    if (appBar != null) {
+                        let topAppBar = material.topAppBar.MDCTopAppBar.attachTo(appBar);
+                        topAppBar.setScrollTarget(document.getElementById('main-content'));
+                        topAppBar.listen('MDCTopAppBar:nav', function () {
+                            drawer.open = !drawer.open;
+                        });
+                        return topAppBar;
+                    }
+                    return undefined;
+                },
+                attachNotificationDialog: function () {
+                    var element = document.getElementById('cas-notification-dialog');
+                    if (element != null) {
+                        return material.dialog.MDCDialog.attachTo(element);
+                    }
+                    return undefined;
+                },
+                attachNotificationToggle: function (dialog) {
+                    var btn = document.getElementById('cas-notifications-menu');
+                    if (btn != null) {
+                        btn.addEventListener('click', function () {
+                            dialog.open();
+                        });
+                    }
+                }
+            }
+            document.addEventListener('DOMContentLoaded', function () {
+                if (material) {
+                    header.init();
+                }
+                if (countMessages == 0) {
+                    window.jQuery('#notifications-count').remove();
+                } else {
+                    window.jQuery('#notifications-count').text("(" + countMessages + ")")
+                }
+            });
+        })(typeof mdc !== 'undefined' && mdc);
+    </script>
+</div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,96 @@
+@import '~antd/es/style/themes/default.less';
+
+.listItem {
+  // display: flex !important;
+  justify-content: center;
+}
+.listItem {
+  :global {
+    .resources-parent-div {
+      display: flex;
+      flex-direction: column;
+      justify-self: center;
+    }
+
+    // .resources-child-link-block {
+    //   width: 300px;
+    //   height: 300px;
+    // }
+
+    .resources-child-link-block {
+      position: relative;
+      // width: 280px;
+      // height: 280px;
+      padding: 28px;
+      border-radius: 10px;
+      background-color: #14b8a6;
+      // background-image: url(https://assets.website-files.com/617b1b1f42c1da41aeae3413/61fbfa105cbf979b0d6e3be2_7.5-downloads.svg);
+      background-position: 140% 120%;
+      background-size: auto;
+      background-repeat: no-repeat;
+      background-attachment: scroll;
+      color: #fff;
+    }
+
+    .w-inline-block {
+      max-width: 100%;
+      display: inline-block;
+    }
+
+    .resources-top-text {
+      font-family: Avenir, sans-serif;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .resources-header {
+      color: #fff;
+      font-size: 22px;
+      line-height: 32px;
+      font-weight: 500;
+    }
+
+    .button.link-block.transparent.invert.resources {
+      position: absolute;
+      left: 8%;
+      top: auto;
+      right: auto;
+      bottom: 7%;
+      display: inline-block;
+      padding-top: 10px;
+      padding-bottom: 7px;
+      font-weight: 600;
+    }
+
+    .button.link-block.transparent.invert {
+      border-color: #fff;
+      color: #fff;
+    }
+
+    .button.link-block.transparent {
+      padding-top: 13px;
+      padding-bottom: 10px;
+      border: 2px solid #f58320;
+      background-color: transparent;
+      color: #f58320;
+    }
+
+    .button.link-block {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    @media screen and (min-width: 1280px) {
+      .button {
+        font-size: 15px;
+      }
+    }
+    .resources-button-text {
+      font-size: 13px;
+  }
+  }
+}
