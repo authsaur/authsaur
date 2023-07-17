@@ -20,8 +20,11 @@
 ![](./login.png)
 
 ## What's Authsaur?
-Authsaur帮助更多企业统一和构建标准化的用户身份体系，基于数十年优秀开源方案CAS，打造**开箱即用**的企业级单点登录系统。
+Authsaur帮助更多企业统一和构建标准化的用户身份体系，以数十年优秀开源产品CAS为内核，打造**开箱即用**的企业级单点登录系统。
 
+既然有了CAS，为什么要有Authsaur？如果只说一个区别，那就是**Authsaur是开箱即用的，在体验交互、产品功能、交付部署、本土化和易用性等方面都向前走了一大步**。
+
+## 特性
 - 应用市场，多协议支持：CAS、SAML、OAuth2、OpenID Connect等
 - 应用单点登录插件化，快速接入非标准协议的应用，比如禅道、腾讯企业邮等
 - 可插拔的认证：LDAP、钉钉、Radius、短信、邮箱等
@@ -34,3 +37,15 @@ Authsaur帮助更多企业统一和构建标准化的用户身份体系，基于
 - 跨平台跨语言客户端集成：Java、C++、Golang、Nodejs等
 - 快速部署：基于Docker安装，只需5分钟
 
+## 文档
+- [官方文档](https://authsaur.deepoove.com/docs/)
+- [五分钟Docker快速部署](https://authsaur.deepoove.com/docs/deploy)
+- [应用集成](https://authsaur.deepoove.com/connect/)
+
+
+## 贡献
+您可以通过多种方式加入本项目，不限于以下方式：
+
+- 反馈使用中遇到的问题
+- 更新和改进文档
+- 解决和讨论问题
