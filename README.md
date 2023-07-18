@@ -37,9 +37,12 @@ Authsaur帮助更多企业统一和构建标准化的用户身份体系，以数
 - 跨平台跨语言客户端集成：Java、C++、Golang、Nodejs等
 - 快速部署：基于Docker安装，只需5分钟
 
+## 体验演示
+[演示地址](https://106.54.209.173)，注意机器规格为2核4G，演示环境数据随时会被清理。
+
 ## 文档
 - [官方文档](https://authsaur.deepoove.com/docs/)
-- [五分钟Docker快速部署](https://authsaur.deepoove.com/docs/deploy)
+- [十分钟Docker快速部署](https://authsaur.deepoove.com/docs/deploy)
 - [应用集成](https://authsaur.deepoove.com/connect/)
 
 
