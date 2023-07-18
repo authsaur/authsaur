@@ -89,9 +89,9 @@
         </dependency>
 
         <dependency>
-            <groupId>cn.authing</groupId>
-            <artifactId>authing-java-sdk</artifactId>
-            <version>3.0.15-authsaur</version>
+            <groupId>com.deepoove</groupId>
+            <artifactId>authsaur-java-sdk</artifactId>
+            <version>3.0.15</version>
         </dependency>
 
         <dependency>
