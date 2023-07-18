@@ -38,12 +38,24 @@ Authsaur帮助更多企业统一和构建标准化的用户身份体系，以数
 - 快速部署：基于Docker安装，只需10分钟
 
 ## 体验演示
-[演示地址](https://106.54.209.173)，注意机器规格为2核4G，演示环境数据随时会被清理。
+- [体验Authsaur](https://106.54.209.173)
+- [体验Authsaur控制台](http://106.54.209.173:8000)
+
+默认账号密码为：`authsaur-admin/Mellon`，注意机器规格为2核4G，演示环境数据随时会被清理。
 
 ## 文档
-- [官方文档](https://authsaur.deepoove.com/docs/)
-- [十分钟Docker快速部署](https://authsaur.deepoove.com/docs/deploy)
-- [应用集成](https://authsaur.deepoove.com/connect/)
+
+[官方文档](https://authsaur.deepoove.com/docs/)
+
+- [Docker快速部署](https://authsaur.deepoove.com/docs/deploy)
+- [应用市场集成案例](https://authsaur.deepoove.com/connect/)
+- [开启双因素认证](https://authsaur.deepoove.com/docs/guide/mfa/)
+- [钉钉扫码和H5微应用单点登录](https://authsaur.deepoove.com/docs/guide/dingtalk/)
+
+## 讨论
+Authsaur尚处于公测beta版本，未来的发展需要更多爱折腾的开发者参与，也需要听到更多关于产品功能的声音，共同打造更好的开源单点登录产品。
+
+- Authsaur交流QQ群号：`895075400`
 
 
 ## 贡献
