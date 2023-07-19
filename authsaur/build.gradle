@@ -174,7 +174,7 @@ dependencies {
     implementation group: 'org.jasig.cas.client', name: 'cas-client-core', version: '3.6.1'
 //    implementation "org.pac4j:pac4j-core:4.0.3"
     implementation "org.pac4j:pac4j-jwt:5.3.1"
-    implementation group: 'org.bouncycastle', name: 'bcprov-jdk15to18', version: '1.66'
+//    implementation group: 'org.bouncycastle', name: 'bcprov-jdk15to18', version: '1.66'
     implementation "org.apereo.cas:cas-server-support-pac4j-webflow"
     implementation "org.apereo.cas:cas-server-support-pac4j-api"
     implementation "org.apereo.cas:cas-server-core-web-api"
