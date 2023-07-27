@@ -163,15 +163,16 @@ public class UserManagementApi {
             entity.setId(-1);
             entity.setPrincipal(named);
             entity.setCreated(new Date());
+            entity.setSource(DEFAULT_USER_SOURCE);
         } else {
             entity.setId(original.getId());
             entity.setPrincipal(cmd.getPrincipal());
             entity.setPassword(original.getPassword());
             entity.setCreated(original.getCreated());
+            entity.setSource(original.getSource());
         }
         entity.setUserId(cmd.getUserId());
         entity.setName(cmd.getName());
-        entity.setSource(DEFAULT_USER_SOURCE);
         entity.setEmail(cmd.getEmail());
         entity.setMobile(cmd.getMobile());
         if (StringUtils.isNotBlank(cmd.getPassword())) {
